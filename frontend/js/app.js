@@ -9,6 +9,7 @@ let fullName = '';
 let mockMac = '';
 let mockHostname = '';
 let hostIpSetting = '';
+let clientSsidSetting = 'Galaxy S25 Ultra 7A56'; // Default POC SSID
 
 let adminToken = '';
 let activeView = 'admin'; // Default view is admin dashboard
@@ -27,12 +28,18 @@ function loadSettings() {
     if (hostIpParam) {
         localStorage.setItem('host_ip', hostIpParam);
     }
+    
+    const ssidParam = urlParams.get('ssid');
+    if (ssidParam) {
+        localStorage.setItem('client_ssid', ssidParam);
+    }
 
     ssoIdentity = localStorage.getItem('sso_identity') || '';
     fullName = localStorage.getItem('full_name') || '';
     mockMac = localStorage.getItem('mock_mac') || '';
     mockHostname = localStorage.getItem('mock_hostname') || '';
     hostIpSetting = localStorage.getItem('host_ip') || '';
+    clientSsidSetting = localStorage.getItem('client_ssid') || 'Galaxy S25 Ultra 7A56';
     adminToken = localStorage.getItem('admin_token') || '';
 
     // Calculate API Base depending on host IP setting
@@ -53,12 +60,11 @@ function initializeUI() {
     document.getElementById('diag-host-ip').innerText = hostIpSetting || 'localhost';
 
     const urlParams = new URLSearchParams(window.location.search);
-    const path = window.location.pathname;
     const mode = urlParams.get('mode');
     const join = urlParams.get('join');
 
     // Detect if page should render in Client view (Employee)
-    const isClientMode = (mode === 'client') || (join !== null) || path.includes('/join/');
+    const isClientMode = (mode === 'client') || (join !== null);
 
     if (isClientMode) {
         activeView = 'client';
@@ -135,7 +141,7 @@ async function handleEmployeeLogin() {
             Hostname: genHostname,
             MAC_Address: genMAC,
             Event_Type: 'WAKE',
-            SSID: 'Samsung S20 Ultra',
+            SSID: clientSsidSetting,
             Timestamp: new Date()
         };
 
@@ -191,7 +197,7 @@ async function sendBrowserAgentHeartbeat() {
         Hostname: mockHostname,
         MAC_Address: mockMac,
         Event_Type: 'HEARTBEAT',
-        SSID: 'Samsung S20 Ultra', // Fixed Ramboll hotspot SSID for demo POC
+        SSID: clientSsidSetting, // Dynamics parameter based on setup config
         Timestamp: new Date()
     };
 
@@ -304,8 +310,8 @@ function handleGenerateShareLink() {
     const origin = window.location.origin;
     const hostIp = hostIpSetting || 'localhost';
     
-    // Generates share link matching specifications (Auto-embeds client and host IP parameters)
-    const shareLink = `${origin}/join/ABCD1234?host_ip=${hostIp}`;
+    // Generates share link utilizing query params to prevent Vercel routing 404s
+    const shareLink = `${origin}/index.html?mode=client&host_ip=${hostIp}&ssid=Galaxy S25 Ultra 7A56`;
     
     const input = document.getElementById('generated-share-link');
     input.value = shareLink;

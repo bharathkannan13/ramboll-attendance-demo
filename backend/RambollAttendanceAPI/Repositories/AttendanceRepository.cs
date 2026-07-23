@@ -54,7 +54,7 @@ namespace RambollAttendanceAPI.Repositories
             return null;
         }
 
-        public async Task LogTelemetryAsync(int employeeId, string macAddress, string hostname, string eventType, DateTime timestamp, string ssid)
+        public async Task LogTelemetryAsync(int employeeId, string macAddress, string hostname, string eventType, DateTime timestamp, string ssid, string ipAddress)
         {
             using var conn = (SqlConnection)_connectionFactory.CreateConnection();
             await conn.OpenAsync();
@@ -64,8 +64,8 @@ namespace RambollAttendanceAPI.Repositories
             {
                 // 1. Insert Telemetry Log
                 const string insertTelemetryQuery = @"
-                    INSERT INTO dbo.Telemetry_Log (Employee_ID, MAC_Address, Hostname, Event_Type, Timestamp, SSID)
-                    VALUES (@Employee_ID, @MAC_Address, @Hostname, @Event_Type, @Timestamp, @SSID);";
+                    INSERT INTO dbo.Telemetry_Log (Employee_ID, MAC_Address, Hostname, Event_Type, Timestamp, SSID, IP_Address)
+                    VALUES (@Employee_ID, @MAC_Address, @Hostname, @Event_Type, @Timestamp, @SSID, @IP_Address);";
 
                 using (var cmd = new SqlCommand(insertTelemetryQuery, conn, (SqlTransaction)transaction))
                 {
@@ -75,6 +75,7 @@ namespace RambollAttendanceAPI.Repositories
                     cmd.Parameters.AddWithValue("@Event_Type", eventType.ToUpper());
                     cmd.Parameters.AddWithValue("@Timestamp", timestamp);
                     cmd.Parameters.AddWithValue("@SSID", ssid);
+                    cmd.Parameters.AddWithValue("@IP_Address", (object)ipAddress ?? DBNull.Value);
                     await cmd.ExecuteNonQueryAsync();
                 }
 
@@ -312,7 +313,7 @@ namespace RambollAttendanceAPI.Repositories
             await conn.OpenAsync();
 
             const string query = @"
-                SELECT t.Timestamp, e.FullName, t.Hostname, t.MAC_Address, t.Event_Type, t.SSID 
+                SELECT t.Timestamp, e.FullName, t.Hostname, t.MAC_Address, t.Event_Type, t.SSID, t.IP_Address 
                 FROM dbo.Telemetry_Log t
                 INNER JOIN dbo.Employee_Master e ON t.Employee_ID = e.Employee_ID
                 WHERE CAST(t.Timestamp AS DATE) = @Date
@@ -331,7 +332,8 @@ namespace RambollAttendanceAPI.Repositories
                     Hostname = reader.GetString(2),
                     MAC_Address = reader.GetString(3),
                     Event_Type = reader.GetString(4),
-                    SSID = reader.GetString(5)
+                    SSID = reader.GetString(5),
+                    IP_Address = reader.IsDBNull(6) ? string.Empty : reader.GetString(6)
                 });
             }
             return logs;

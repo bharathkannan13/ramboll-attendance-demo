@@ -10,5 +10,6 @@ namespace RambollAttendanceAPI.Models
         public string MAC_Address { get; set; } = string.Empty;
         public string Event_Type { get; set; } = string.Empty;
         public string SSID { get; set; } = string.Empty;
+        public string IP_Address { get; set; } = string.Empty;
     }
 }

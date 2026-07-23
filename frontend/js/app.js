@@ -72,13 +72,20 @@ function initializeUI() {
     document.getElementById('setting-host-ip').value = hostIpSetting;
     document.getElementById('diag-host-ip').innerText = hostIpSetting || 'localhost';
     
-    // Auto-detect mode if ?mode=admin is specified in URL query
+    // Auto-detect mode. Default is 'admin' (Manager Dashboard) unless 'client' is explicitly specified
     const urlParams = new URLSearchParams(window.location.search);
     const mode = urlParams.get('mode');
-    if (mode === 'admin') {
-        switchView('admin');
-    } else {
+    
+    if (mode === 'client') {
+        // Hide tabs from employees completely
+        document.getElementById('tab-client').style.display = 'none';
+        document.getElementById('tab-admin').style.display = 'none';
         switchView('client');
+    } else {
+        // Admin Dashboard is the default main view. Hide tabs.
+        document.getElementById('tab-client').style.display = 'none';
+        document.getElementById('tab-admin').style.display = 'none';
+        switchView('admin');
     }
 }
 
@@ -239,13 +246,14 @@ async function fetchManagerDashboard() {
         logsTbody.innerHTML = '';
         
         if (logs.length === 0) {
-            logsTbody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: var(--text-secondary);">No logs registered.</td></tr>`;
+            logsTbody.innerHTML = `<tr><td colspan="7" style="text-align: center; color: var(--text-secondary);">No logs registered.</td></tr>`;
         } else {
             logs.reverse().slice(0, 30).forEach(log => {
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
                     <td><strong>${new Date(log.timestamp).toLocaleTimeString()}</strong></td>
                     <td>${log.fullName || 'Guest User'}</td>
+                    <td><code style="color: var(--brand-cyan);">${log.iP_Address || log.ip_Address || 'Unknown'}</code></td>
                     <td>${log.hostname}</td>
                     <td><code>${log.mac_Address}</code></td>
                     <td><span style="font-weight:600; color:${getEventColor(log.event_Type)};">${log.event_Type}</span></td>

@@ -57,13 +57,18 @@ namespace RambollAttendanceAPI.Controllers
 
                 // 3. Log Raw Telemetry to Database
                 DateTime logTime = requestEvent.Timestamp == default ? DateTime.Now : requestEvent.Timestamp;
+                
+                string clientIp = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "Unknown";
+                if (clientIp == "::1") clientIp = "127.0.0.1";
+
                 await _repository.LogTelemetryAsync(
                     employee.Employee_ID,
                     requestEvent.MAC_Address,
                     requestEvent.Hostname,
                     requestEvent.Event_Type,
                     logTime,
-                    requestEvent.SSID
+                    requestEvent.SSID,
+                    clientIp
                 );
 
                 // 4. Trigger Real-Time Aggregation for today's summary

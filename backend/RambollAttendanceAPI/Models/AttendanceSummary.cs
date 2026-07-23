@@ -14,5 +14,6 @@ namespace RambollAttendanceAPI.Models
         public DateTime? Last_Seen { get; set; }
         public decimal Active_Hours { get; set; }
         public string Status { get; set; } = "ABSENT";
+        public string IP_Address { get; set; } = string.Empty;
     }
 }

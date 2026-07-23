@@ -131,7 +131,7 @@ async function sendBrowserAgentHeartbeat() {
         Hostname: mockHostname,
         MAC_Address: mockMac,
         Event_Type: 'HEARTBEAT',
-        SSID: 'Galaxy S25 Ultra 7A56', // Fixed Ramboll hotspot SSID for demo convenience
+        SSID: 'Samsung S20 Ultra', // Fixed Ramboll hotspot SSID for demo convenience
         Timestamp: new Date()
     };
 
@@ -148,7 +148,7 @@ async function sendBrowserAgentHeartbeat() {
 
         if (response.ok) {
             console.log("[AGENT] Hotspot Heartbeat sent successfully.");
-            updateConnectionStatus(true, 'Galaxy S25 Ultra 7A56');
+            updateConnectionStatus(true, 'Samsung S20 Ultra');
         } else {
             console.warn("[AGENT] Hotspot Heartbeat failed. Network rejected.");
             updateConnectionStatus(false);
@@ -194,12 +194,12 @@ async function fetchClientDashboard() {
         if (data.active_Hours > 0 || consecutiveOfflineCount === 0) {
             statusLabel.innerText = "CONNECTED TO RAMBOLL NETWORK";
             statusLabel.style.color = "var(--green-glow)";
-            ssidLabel.innerText = "Active SSID: Galaxy S25 Ultra 7A56";
-            updateConnectionStatus(true, 'Galaxy S25 Ultra 7A56');
+            ssidLabel.innerText = "Active SSID: Samsung S20 Ultra";
+            updateConnectionStatus(true, 'Samsung S20 Ultra');
         } else {
             statusLabel.innerText = "CLOCK SUSPENDED - UNTRUSTED SSID";
             statusLabel.style.color = "var(--red-glow)";
-            ssidLabel.innerText = "Connect to Galaxy S25 Ultra hotspot to resume attendance tracking.";
+            ssidLabel.innerText = "Connect to Samsung S20 Ultra hotspot to resume attendance tracking.";
             updateConnectionStatus(false);
         }
     } catch (err) {
@@ -219,18 +219,17 @@ async function fetchManagerDashboard() {
         summaryTbody.innerHTML = '';
         
         if (summaries.length === 0) {
-            summaryTbody.innerHTML = `<tr><td colspan="7" style="text-align: center; color: var(--text-secondary);">No records logged today.</td></tr>`;
+            summaryTbody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: var(--text-secondary);">No records logged today.</td></tr>`;
         } else {
             summaries.forEach(s => {
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
                     <td><strong>${s.fullName}</strong></td>
-                    <td><code>${s.ssO_Identity}</code></td>
-                    <td>${s.department}</td>
+                    <td><code>${new Date(s.work_Date).toLocaleDateString()}</code></td>
                     <td>${formatTime(s.first_Seen)}</td>
-                    <td>${formatTime(s.last_Seen || s.last_seen)}</td>
-                    <td><strong style="color: var(--brand-cyan);">${s.active_Hours.toFixed(2)} hrs</strong></td>
-                    <td><span class="badge ${s.status.toLowerCase()}">${s.status}</span></td>
+                    <td>${formatTime(s.last_Seen)}</td>
+                    <td><code style="color: var(--brand-cyan);">${s.iP_Address || s.ip_Address || 'Unknown'}</code></td>
+                    <td><strong>${s.active_Hours.toFixed(2)} hrs</strong></td>
                 `;
                 summaryTbody.appendChild(tr);
             });

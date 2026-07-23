@@ -155,7 +155,8 @@ namespace RambollAttendanceAPI.Repositories
                     s.First_Seen, 
                     s.Last_Seen, 
                     s.Active_Hours, 
-                    s.Status
+                    s.Status,
+                    s.IP_Address
                 FROM dbo.Attendance_Daily_Summary s
                 INNER JOIN dbo.Employee_Master e ON s.Employee_ID = e.Employee_ID
                 WHERE s.Work_Date = @Date
@@ -178,7 +179,8 @@ namespace RambollAttendanceAPI.Repositories
                     First_Seen = reader.IsDBNull(6) ? null : reader.GetDateTime(6),
                     Last_Seen = reader.IsDBNull(7) ? null : reader.GetDateTime(7),
                     Active_Hours = reader.GetDecimal(8),
-                    Status = reader.GetString(9)
+                    Status = reader.GetString(9),
+                    IP_Address = reader.IsDBNull(10) ? string.Empty : reader.GetString(10)
                 });
             }
             return summaries;
@@ -248,6 +250,12 @@ namespace RambollAttendanceAPI.Repositories
             await conn.OpenAsync();
 
             const string upsertQuery = @"
+                DECLARE @LatestIP VARCHAR(50);
+                SELECT TOP 1 @LatestIP = IP_Address 
+                FROM dbo.Telemetry_Log 
+                WHERE Employee_ID = @Employee_ID AND CAST(Timestamp AS DATE) = @Work_Date 
+                ORDER BY Timestamp DESC;
+
                 MERGE INTO dbo.Attendance_Daily_Summary AS target
                 USING (SELECT @Employee_ID AS Employee_ID, @Work_Date AS Work_Date) AS source
                 ON target.Employee_ID = source.Employee_ID AND target.Work_Date = source.Work_Date
@@ -257,10 +265,11 @@ namespace RambollAttendanceAPI.Repositories
                         Last_Seen = @Last_Seen,
                         Active_Hours = @Active_Hours,
                         Status = @Status,
+                        IP_Address = @LatestIP,
                         Last_Updated = GETDATE()
                 WHEN NOT MATCHED THEN
-                    INSERT (Employee_ID, Work_Date, First_Seen, Last_Seen, Active_Hours, Status, Last_Updated)
-                    VALUES (@Employee_ID, @Work_Date, @First_Seen, @Last_Seen, @Active_Hours, @Status, GETDATE());";
+                    INSERT (Employee_ID, Work_Date, First_Seen, Last_Seen, Active_Hours, Status, IP_Address, Last_Updated)
+                    VALUES (@Employee_ID, @Work_Date, @First_Seen, @Last_Seen, @Active_Hours, @Status, @LatestIP, GETDATE());";
 
             using var cmd = new SqlCommand(upsertQuery, conn);
             cmd.Parameters.AddWithValue("@Employee_ID", employeeId);

@@ -15,10 +15,26 @@ namespace RambollAttendanceAPI.Controllers
     public class ReportsController : ControllerBase
     {
         private readonly IAttendanceRepository _repository;
+        private const string AdminSecret = "RambollAdminSecret2026";
 
         public ReportsController(IAttendanceRepository repository)
         {
             _repository = repository;
+        }
+
+        private bool IsAdminAuthorized()
+        {
+            string? token = null;
+            if (Request.Headers.TryGetValue("X-Admin-Token", out var headerToken) && !string.IsNullOrEmpty(headerToken))
+            {
+                token = headerToken.ToString();
+            }
+            else if (Request.Query.TryGetValue("admin_token", out var queryToken) && !string.IsNullOrEmpty(queryToken))
+            {
+                token = queryToken.ToString();
+            }
+
+            return string.Equals(token, AdminSecret, StringComparison.Ordinal);
         }
 
         [HttpGet("dashboard")]
@@ -88,6 +104,11 @@ namespace RambollAttendanceAPI.Controllers
         [HttpGet("history/all")]
         public async Task<IActionResult> GetAllDailyHistory([FromQuery] string? date)
         {
+            if (!IsAdminAuthorized())
+            {
+                return StatusCode(403, "Access Denied: Forbidden request.");
+            }
+
             DateTime queryDate = string.IsNullOrEmpty(date) ? DateTime.Today : DateTime.Parse(date);
 
             try
@@ -104,6 +125,11 @@ namespace RambollAttendanceAPI.Controllers
         [HttpGet("summary")]
         public async Task<IActionResult> GetDailySummaryList([FromQuery] string? date)
         {
+            if (!IsAdminAuthorized())
+            {
+                return StatusCode(403, "Access Denied: Forbidden request.");
+            }
+
             DateTime queryDate = string.IsNullOrEmpty(date) ? DateTime.Today : DateTime.Parse(date);
 
             try
@@ -120,6 +146,11 @@ namespace RambollAttendanceAPI.Controllers
         [HttpPost("reset")]
         public async Task<IActionResult> ResetDemoData()
         {
+            if (!IsAdminAuthorized())
+            {
+                return StatusCode(403, "Access Denied: Forbidden request.");
+            }
+
             try
             {
                 await _repository.ClearAllTelemetryAndSummariesAsync();
@@ -134,6 +165,11 @@ namespace RambollAttendanceAPI.Controllers
         [HttpGet("export")]
         public async Task<IActionResult> ExportToCSV([FromQuery] string? date)
         {
+            if (!IsAdminAuthorized())
+            {
+                return StatusCode(403, "Access Denied: Forbidden request.");
+            }
+
             DateTime queryDate = string.IsNullOrEmpty(date) ? DateTime.Today : DateTime.Parse(date);
 
             try

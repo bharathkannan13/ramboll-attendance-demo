@@ -3,12 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Ramboll Smart Attendance System Portal - Shareable Demo Console">
+    <meta name="description" content="Ramboll Smart Attendance System - Secure Portal">
     <title>Ramboll Smart Attendance System</title>
     <!-- Stylesheet -->
     <link rel="stylesheet" href="css/index.css">
     <style>
-        /* Extra styles for the SPA tabs & view switching */
         .header-actions {
             display: flex;
             gap: 0.75rem;
@@ -61,15 +60,16 @@
         .drawer-content.active {
             display: block;
         }
-        /* Custom modal popup for first-time user login */
+        
+        /* Overlays for authorization modals */
         .login-overlay {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(5, 8, 16, 0.85);
-            backdrop-filter: blur(8px);
+            background: rgba(5, 8, 16, 0.96);
+            backdrop-filter: blur(12px);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -86,28 +86,32 @@
             background: rgba(18, 26, 47, 0.95);
             border: 1px solid var(--border-glass);
             border-radius: 16px;
-            padding: 2rem;
+            padding: 2.5rem 2rem;
             width: 90%;
             max-width: 400px;
-            box-shadow: 0 10px 40px rgba(0, 240, 255, 0.1);
+            box-shadow: 0 10px 40px rgba(0, 240, 255, 0.08);
+            text-align: center;
+        }
+        
+        .client-subview {
+            display: none;
+        }
+        .client-subview.active {
+            display: block;
         }
     </style>
 </head>
 <body>
 
-    <!-- Header Navigation -->
-    <header>
+    <!-- Header Navigation (Visible to Admin only, hidden completely in Client mode) -->
+    <header id="nav-header">
         <div class="nav-container">
             <div class="logo-block">
                 <div class="logo-icon">R</div>
                 <div class="logo-text">RAMBOLL ATTENDANCE</div>
             </div>
             
-            <!-- View Switcher Tabs -->
             <div class="header-actions">
-                <button class="btn-secondary" id="tab-client" onclick="switchView('client')">Employee Portal</button>
-                <button class="btn-secondary" id="tab-admin" onclick="switchView('admin')">Manager Dashboard</button>
-                
                 <div class="status-pill">
                     <span id="nav-connection-dot" class="pulse-indicator"></span>
                     <span id="nav-connection-text">CONNECTING...</span>
@@ -119,36 +123,51 @@
     <!-- Main Workspace -->
     <main>
         
-        <!-- SECTION 1: EMPLOYEE CLIENT VIEW (Simple, Minimalist UI) -->
-        <div id="section-client" class="view-section active" style="width: 100%;">
-            <div style="max-width: 600px; margin: 3rem auto; display: flex; flex-direction: column; gap: 2rem;">
+        <!-- SECTION 1: EMPLOYEE PORTAL -->
+        <div id="section-client" class="view-section" style="width: 100%;">
+            <div style="max-width: 500px; margin: 5rem auto; padding: 0 1rem;">
                 
-                <!-- Welcome & Network Connection Card -->
-                <section class="glass-card" style="text-align: center; padding: 3rem 2rem;">
-                    <div style="width: 70px; height: 70px; background: rgba(0, 240, 255, 0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem auto; border: 1px solid var(--brand-cyan);">
-                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--brand-cyan)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.55a11 11 0 0 1 14.08 0"></path><path d="M1.42 9a16 16 0 0 1 21.16 0"></path><path d="M8.53 16.11a6 6 0 0 1 6.95 0"></path><line x1="12" y1="20" x2="12.01" y2="20"></line></svg>
-                    </div>
-                    <h1 style="font-size: 2rem; font-weight: 700; margin-bottom: 0.5rem;" id="client-welcome-name">Welcome!</h1>
-                    <p style="color: var(--text-secondary); font-size: 0.95rem; margin-bottom: 2rem;" id="client-sso-label">Identity: detecting...</p>
-                    
-                    <div style="background: rgba(255, 255, 255, 0.02); border: 1px solid var(--border-glass); border-radius: 12px; padding: 1.5rem; margin-bottom: 2rem;">
-                        <span class="form-label" style="margin-bottom: 0.5rem;">Network Status</span>
-                        <h2 style="font-size: 1.35rem; color: var(--green-glow);" id="client-connection-status">CONNECTED TO RAMBOLL NETWORK</h2>
-                        <p style="font-size: 0.85rem; color: var(--text-secondary); margin-top: 0.25rem;" id="client-network-ssid">Active SSID: Galaxy S25 Ultra 7A56</p>
-                    </div>
+                <!-- Page 1: Enter Username Form -->
+                <div id="client-login-view" class="client-subview active">
+                    <section class="glass-card" style="padding: 3rem 2rem; text-align: center;">
+                        <h1 style="font-size: 1.85rem; font-weight: 700; margin-bottom: 2.5rem; letter-spacing: 0.5px;">
+                            RAMBoll Attendance
+                        </h1>
+                        
+                        <div class="form-group" style="text-align: left; margin-bottom: 2rem;">
+                            <label class="form-label" style="text-align: center; display: block; margin-bottom: 1rem; font-size: 1rem; color: var(--text-secondary);">
+                                Enter Your Username
+                            </label>
+                            <input type="text" id="reg-name" class="sim-input" placeholder="Username" style="text-align: center; font-size: 1.15rem; padding: 0.85rem;">
+                        </div>
 
-                    <!-- Client Personal Today Stats -->
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; text-align: left;">
-                        <div style="background: rgba(255, 255, 255, 0.01); border: 1px solid var(--border-glass); padding: 1rem; border-radius: 8px;">
-                            <span class="metric-label" style="font-size: 0.75rem;">Time Logged</span>
-                            <span class="metric-value" style="font-size: 1.35rem; color: var(--brand-cyan);" id="client-metric-hours">0.00 hrs</span>
+                        <button class="btn-primary" style="width: 100%; padding: 0.85rem; font-size: 1.05rem;" id="btn-submit-registration">
+                            Enter
+                        </button>
+                    </section>
+                </div>
+
+                <!-- Page 2: Welcome Portal (Tracking Session active) -->
+                <div id="client-welcome-view" class="client-subview">
+                    <section class="glass-card" style="text-align: center; padding: 4rem 2rem; border-color: var(--brand-cyan);">
+                        <h1 style="font-size: 1.5rem; font-weight: 700; margin-bottom: 1rem;">
+                            Welcome to RAMBoll Attendance Portal
+                        </h1>
+                        <p style="color: var(--text-secondary); font-size: 1.1rem; margin-bottom: 2.5rem;" id="client-welcome-name">
+                            Welcome, <span id="display-client-name">Guest</span>
+                        </p>
+                        
+                        <div style="background: rgba(0, 240, 255, 0.03); border: 1px solid rgba(0, 240, 255, 0.2); border-radius: 12px; padding: 2rem 1.5rem; margin-bottom: 2rem;">
+                            <h2 style="font-size: 1.25rem; color: var(--green-glow); margin-bottom: 0.75rem;">
+                                ✅ Attendance Started Successfully
+                            </h2>
+                            <p style="font-size: 0.9rem; color: var(--text-secondary); line-height: 1.4;">
+                                You are connected to the authorized network.<br>
+                                Please keep this page open while working.
+                            </p>
                         </div>
-                        <div style="background: rgba(255, 255, 255, 0.01); border: 1px solid var(--border-glass); padding: 1rem; border-radius: 8px;">
-                            <span class="metric-label" style="font-size: 0.75rem;">First Seen</span>
-                            <span class="metric-value" style="font-size: 1.35rem;" id="client-metric-first-seen">--:--</span>
-                        </div>
-                    </div>
-                </section>
+                    </section>
+                </div>
                 
             </div>
         </div>
@@ -157,19 +176,19 @@
         <div id="section-admin" class="view-section" style="width: 100%;">
             <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 2rem; width: 100%;">
                 
-                <!-- Left Column: Summaries & Live Stream -->
+                <!-- Left Column: Summaries -->
                 <div style="display: flex; flex-direction: column; gap: 2rem;">
                     
                     <!-- Management Overview Portal -->
                     <section class="glass-card">
                         <h1 class="card-title">
-                            Team Presence Overview (Hotspot Network)
+                            Live Connected Users
                             <div style="display: flex; gap: 0.5rem;">
                                 <button class="btn-secondary" id="btn-clear-db" style="padding: 0.4rem 0.8rem; font-size: 0.8rem; border-color: rgba(255, 75, 75, 0.4); color: #ff5c5c;">
                                     Clear Demo Data
                                 </button>
                                 <button class="btn-primary" id="btn-export-csv" style="padding: 0.4rem 0.8rem; font-size: 0.8rem;">
-                                    Export CSV Report
+                                    Export to Excel
                                 </button>
                             </div>
                         </h1>
@@ -182,37 +201,13 @@
                                         <th>First Seen</th>
                                         <th>Last Seen</th>
                                         <th>IP Address</th>
+                                        <th>Status</th>
                                         <th>Total Hours</th>
                                     </tr>
                                 </thead>
                                 <tbody id="management-table-body">
                                     <tr>
-                                        <td colspan="6" style="text-align: center; color: var(--text-secondary);">Loading team attendance summaries...</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </section>
-
-                    <!-- Employee Live Telemetry Stream -->
-                    <section class="glass-card">
-                        <h2 class="card-title">Live Hotspot Telemetry Events (All Laptops)</h2>
-                        <div class="table-wrapper">
-                            <table>
-                                <thead>
-                                    <tr>
-                                        <th>Timestamp</th>
-                                        <th>Employee Name</th>
-                                        <th>IP Address</th>
-                                        <th>Hostname</th>
-                                        <th>MAC Address</th>
-                                        <th>Event Type</th>
-                                        <th>Network SSID</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="telemetry-table-body">
-                                    <tr>
-                                        <td colspan="7" style="text-align: center; color: var(--text-secondary);">Waiting for client heartbeats...</td>
+                                        <td colspan="7" style="text-align: center; color: var(--text-secondary);">Loading team attendance summaries...</td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -221,12 +216,27 @@
 
                 </div>
 
-                <!-- Right Column: Diagnostics & Settings -->
+                <!-- Right Column: Diagnostics & Link Generator -->
                 <div style="display: flex; flex-direction: column; gap: 2rem;">
                     
+                    <!-- Shareable Link Generator -->
+                    <section class="glass-card">
+                        <h2 class="card-title">Generate Attendance Link</h2>
+                        <p style="font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 1rem; line-height: 1.4;">
+                            Generate a unique attendance connection link for employees. The server IP will be embedded automatically.
+                        </p>
+                        <div class="form-group">
+                            <label class="form-label" for="generated-share-link">Attendance Link</label>
+                            <input type="text" id="generated-share-link" class="sim-input" readonly style="background: rgba(255,255,255,0.02); color: var(--brand-cyan); cursor: pointer;" onclick="copyShareLink()">
+                        </div>
+                        <div class="form-group" style="margin-top: 1rem;">
+                            <button class="btn-primary" id="btn-generate-link" style="width: 100%;">Generate Attendance Link</button>
+                        </div>
+                    </section>
+
                     <!-- Connection Diagnostics -->
                     <section class="glass-card">
-                        <h2 class="card-title">Demo Monitor Context</h2>
+                        <h2 class="card-title">Diagnostics Monitor</h2>
                         <div style="display: flex; flex-direction: column; gap: 1.25rem; font-size: 0.85rem;">
                             <div>
                                 <span class="form-label">Host Laptop IP Address</span>
@@ -239,52 +249,6 @@
                         </div>
                     </section>
 
-                    <!-- Shareable Link Generator -->
-                    <section class="glass-card">
-                        <h2 class="card-title">Shareable Link Generator</h2>
-                        <p style="font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 1rem; line-height: 1.4;">
-                            Generate a customized client link for your friends. It will auto-embed your laptop's IP so they connect instantly.
-                        </p>
-                        <div class="form-group">
-                            <label class="form-label" for="generated-share-link">Generated Link</label>
-                            <input type="text" id="generated-share-link" class="sim-input" readonly style="background: rgba(255,255,255,0.02); color: var(--brand-cyan); cursor: pointer;" onclick="copyShareLink()">
-                        </div>
-                        <div class="form-group" style="margin-top: 1rem;">
-                            <button class="btn-primary" id="btn-generate-link" style="width: 100%;">Generate Link</button>
-                        </div>
-                    </section>
-
-                    <!-- Telemetry Simulator Tool -->
-                    <section class="glass-card">
-                        <h2 class="card-title">Override Simulator</h2>
-                        <p style="font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 1rem; line-height: 1.4;">
-                            Use this panel to simulate overrides on behalf of any guest employee.
-                        </p>
-
-                        <div class="form-group">
-                            <label class="form-label" for="sim-sso">Target SSO</label>
-                            <input type="text" id="sim-sso" class="sim-input" value="RAMBOLL\johndoe">
-                        </div>
-                        <div class="form-group">
-                            <label class="form-label" for="sim-name">Employee Name</label>
-                            <input type="text" id="sim-name" class="sim-input" value="John Doe">
-                        </div>
-                        <div class="form-group">
-                            <label class="form-label" for="sim-event">Event Type</label>
-                            <select id="sim-event" class="sim-input">
-                                <option value="WAKE">WAKE (Connect)</option>
-                                <option value="HEARTBEAT">HEARTBEAT (Active)</option>
-                                <option value="LOCK">LOCK (Suspend)</option>
-                                <option value="SLEEP">SLEEP (Suspend)</option>
-                            </select>
-                        </div>
-
-                        <div class="form-group" style="margin-top: 1.5rem; display: flex; gap: 0.75rem;">
-                            <button class="btn-primary" id="btn-send-sim" style="flex: 1;">Inject</button>
-                            <button class="btn-secondary" id="btn-refresh" style="flex: 1;">Refresh</button>
-                        </div>
-                    </section>
-
                 </div>
 
             </div>
@@ -292,58 +256,54 @@
 
     </main>
 
-    <!-- Floating Configuration Cog -->
-    <div class="settings-drawer">
+    <!-- Floating Configuration Cog (Hidden in client view mode) -->
+    <div class="settings-drawer" id="admin-settings-drawer">
         <button class="cog-btn" id="btn-toggle-settings">⚙</button>
         <div class="drawer-content" id="settings-drawer-content">
-            <h3 style="font-size: 1rem; margin-bottom: 1rem; border-bottom: 1px solid var(--border-glass); padding-bottom: 0.5rem;">Demo Config Settings</h3>
+            <h3 style="font-size: 1rem; margin-bottom: 1rem; border-bottom: 1px solid var(--border-glass); padding-bottom: 0.5rem;">Demo Configuration</h3>
             
             <div class="form-group">
                 <label class="form-label" for="setting-host-ip">Host Server IP Address</label>
                 <input type="text" id="setting-host-ip" class="sim-input" placeholder="e.g. 192.168.43.10">
-                <small style="font-size: 0.7rem; color: var(--text-secondary); margin-top: 0.25rem; display: block;">
-                    IP of the laptop hosting the Web API backend.
-                </small>
             </div>
 
             <button class="btn-primary" style="width: 100%; font-size: 0.85rem; margin-top: 0.5rem;" id="btn-save-settings">
-                Save & Apply Config
+                Save & Apply
             </button>
-            <button class="btn-secondary" style="width: 100%; font-size: 0.85rem; margin-top: 0.5rem;" id="btn-reset-identity">
-                Change My Name
-            </button>
-        </div>
-    </div>
-
-    <!-- User Registration First-time Prompt Modal -->
-    <div class="login-overlay" id="login-modal-overlay">
-        <div class="login-modal">
-            <h2 style="font-size: 1.25rem; margin-bottom: 0.5rem;">Ramboll Identity Check</h2>
-            <p style="font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 1.5rem; line-height: 1.4;">
-                Please enter your details to simulate Single Sign-On (SSO) on the hotspot network.
-            </p>
-            
-            <div class="form-group">
-                <label class="form-label" for="reg-name">Full Name</label>
-                <input type="text" id="reg-name" class="sim-input" placeholder="e.g. Alice Smith">
-            </div>
-
-            <button class="btn-primary" style="width: 100%; margin-top: 1rem;" id="btn-submit-registration">
-                Connect and Log In
+            <button class="btn-secondary" style="width: 100%; font-size: 0.85rem; margin-top: 0.5rem;" id="btn-logout-admin">
+                Logout Admin
             </button>
         </div>
     </div>
 
-    <!-- Network Warning Modal -->
+    <!-- Network Warning Modal Overlay (Access Denied) -->
     <div class="login-overlay" id="network-warning-overlay">
         <div class="login-modal" style="border-color: var(--red-glow); text-align: center;">
             <div style="font-size: 3rem; margin-bottom: 1rem;">⚠️</div>
-            <h2 style="font-size: 1.25rem; margin-bottom: 0.5rem; color: #ff5c5c;">Incorrect Network</h2>
-            <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 1.5rem; line-height: 1.4;">
-                To log your attendance, you must connect your laptop to the <strong>Samsung Galaxy S25 Ultra</strong> hotspot Wi-Fi network.
+            <h2 style="font-size: 1.35rem; margin-bottom: 0.75rem; color: #ff5c5c; font-weight: 700;">
+                Access Denied
+            </h2>
+            <p style="font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 1.5rem; line-height: 1.5;">
+                Please connect to the <strong>RAMBoll Office Wi-Fi</strong> (Samsung S20 Ultra for POC) to authenticate.
             </p>
-            <button class="btn-secondary" style="width: 100%; border-color: var(--border-glass);" onclick="closeNetworkWarning()">
-                Dismiss
+        </div>
+    </div>
+
+    <!-- Admin Password Portal Login Modal Overlay -->
+    <div class="login-overlay" id="admin-login-overlay">
+        <div class="login-modal">
+            <h2 style="font-size: 1.25rem; margin-bottom: 0.5rem; font-weight: 700;">Admin Dashboard Login</h2>
+            <p style="font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 1.5rem;">
+                Please enter the Administrator password to access dashboard.
+            </p>
+            
+            <div class="form-group" style="text-align: left;">
+                <label class="form-label" for="admin-password">Password</label>
+                <input type="password" id="admin-password" class="sim-input" placeholder="••••••••">
+            </div>
+
+            <button class="btn-primary" style="width: 100%; margin-top: 1rem;" id="btn-submit-admin-login">
+                Login
             </button>
         </div>
     </div>

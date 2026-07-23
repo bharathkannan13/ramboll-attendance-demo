@@ -1,0 +1,17 @@
+# Dotnet build outputs
+**/bin/
+**/obj/
+
+# Local databases and logs
+*.log
+*.db
+*.suo
+*.user
+*.pdf
+
+# VS Code config folders
+.vscode/
+.idea/
+
+# Local configuration secrets (optional placeholder)
+# appsettings.Development.json

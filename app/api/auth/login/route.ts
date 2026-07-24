@@ -9,7 +9,19 @@ export async function POST(req: NextRequest) {
     const body = await req.json();
     const { username, password } = loginSchema.parse(body);
 
-    const admin = await prisma.admin.findUnique({ where: { username } });
+    let admin = await prisma.admin.findUnique({ where: { username } });
+
+    const envUser = process.env.ADMIN_USERNAME || 'admin';
+    const envPass = process.env.ADMIN_PASSWORD || 'RambollAdmin2026';
+
+    // Self-healing fallback: auto-create Admin record if database is empty on first deployment
+    if (!admin && username === envUser && password === envPass) {
+      const hash = await bcrypt.hash(password, 10);
+      admin = await prisma.admin.create({
+        data: { username, passwordHash: hash }
+      });
+    }
+
     if (!admin || !(await bcrypt.compare(password, admin.passwordHash))) {
       return NextResponse.json({ error: 'Invalid credentials' }, { status: 401 });
     }

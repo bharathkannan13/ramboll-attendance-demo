@@ -1,17 +1,46 @@
-# Dotnet build outputs
-**/bin/
-**/obj/
+# Dependencies
+node_modules/
+.pnp/
+.pnp.js
 
-# Local databases and logs
-*.log
-*.db
-*.suo
-*.user
-*.pdf
+# Next.js
+.next/
+out/
 
-# VS Code config folders
+# Production
+build/
+
+# Environment
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Misc
+.DS_Store
+*.pem
+Thumbs.db
+
+# TypeScript
+*.tsbuildinfo
+next-env.d.ts
+
+# Prisma
+prisma/*.db
+prisma/migrations/
+
+# IDE
 .vscode/
 .idea/
+*.suo
+*.user
 
-# Local configuration secrets (optional placeholder)
-# appsettings.Development.json
+# Old project artifacts
+*.pdf
+*.log

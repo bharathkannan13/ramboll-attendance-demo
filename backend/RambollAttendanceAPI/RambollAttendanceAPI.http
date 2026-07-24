@@ -1,6 +1,0 @@
-@RambollAttendanceAPI_HostAddress = http://localhost:5068
-
-GET {{RambollAttendanceAPI_HostAddress}}/weatherforecast/
-Accept: application/json
-
-###

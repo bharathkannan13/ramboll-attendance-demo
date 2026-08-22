@@ -112,6 +112,17 @@ namespace EnterpriseAttendance.Web.Controllers
         }
 
         /// <summary>
+        /// Explicit Logout: Wipes all session cookies and redirects cleanly to login page
+        /// </summary>
+        [HttpPost("logout")]
+        public async Task<IActionResult> LogoutApi()
+        {
+            await HttpContext.SignOutAsync("DemoCookies");
+            await HttpContext.SignOutAsync(Microsoft.AspNetCore.Authentication.Cookies.CookieAuthenticationDefaults.AuthenticationScheme);
+            return Ok(new { success = true, redirectUrl = "/Auth/Login?logout=true" });
+        }
+
+        /// <summary>
         /// Returns the currently logged-in user's profile from claims
         /// </summary>
         [HttpGet("me")]

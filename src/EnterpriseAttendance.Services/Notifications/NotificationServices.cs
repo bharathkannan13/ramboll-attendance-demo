@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using ClosedXML.Excel;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using EnterpriseAttendance.Core.Entities;
 using EnterpriseAttendance.Core.Enums;
 using EnterpriseAttendance.Core.Interfaces;
@@ -134,11 +135,16 @@ namespace EnterpriseAttendance.Services.Notifications
     {
         private readonly AttendanceDbContext _context;
         private readonly IOrgHierarchyService _orgHierarchyService;
+        private readonly Microsoft.Extensions.Configuration.IConfiguration _config;
 
-        public EmailNotificationService(AttendanceDbContext context, IOrgHierarchyService orgHierarchyService)
+        public EmailNotificationService(
+            AttendanceDbContext context,
+            IOrgHierarchyService orgHierarchyService,
+            Microsoft.Extensions.Configuration.IConfiguration config)
         {
             _context = context;
             _orgHierarchyService = orgHierarchyService;
+            _config = config;
         }
 
         public async Task SendWeeklyManagerReportAsync(int managerId, DateTime weekStartDate)
@@ -212,6 +218,48 @@ namespace EnterpriseAttendance.Services.Notifications
 
             sb.AppendLine("</div>");
 
+            bool liveMailSent = false;
+            string deliveryStatus = "PreviewInbox";
+
+            // Attempt Live SMTP Dispatch if SMTP Host is configured in appsettings.json
+            try
+            {
+                var smtpHost = _config["Smtp:Host"];
+                if (!string.IsNullOrWhiteSpace(smtpHost))
+                {
+                    int smtpPort = int.TryParse(_config["Smtp:Port"], out var p) ? p : 587;
+                    string smtpUser = _config["Smtp:Username"] ?? "";
+                    string smtpPass = _config["Smtp:Password"] ?? "";
+                    string smtpFrom = _config["Smtp:FromEmail"] ?? "noreply@bkrangroup.com";
+
+                    using var mailMsg = new System.Net.Mail.MailMessage();
+                    mailMsg.From = new System.Net.Mail.MailAddress(smtpFrom, "Bkran Group Connect");
+                    mailMsg.To.Add(manager.Email);
+                    mailMsg.Subject = $"Bkran Group Connect — Direct Reports Weekly Attendance ({monday:MMM dd} – {friday:MMM dd})";
+                    mailMsg.Body = sb.ToString();
+                    mailMsg.IsBodyHtml = true;
+
+                    if (excelBytes != null && excelBytes.Length > 0)
+                    {
+                        mailMsg.Attachments.Add(new System.Net.Mail.Attachment(new MemoryStream(excelBytes), "Weekly_Attendance_Report.xlsx", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"));
+                    }
+
+                    using var client = new System.Net.Mail.SmtpClient(smtpHost, smtpPort);
+                    if (!string.IsNullOrWhiteSpace(smtpUser))
+                    {
+                        client.Credentials = new System.Net.NetworkCredential(smtpUser, smtpPass);
+                        client.EnableSsl = true;
+                    }
+                    await client.SendMailAsync(mailMsg);
+                    deliveryStatus = "SentLiveSMTP";
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"SMTP Dispatch Error: {ex.Message}");
+                deliveryStatus = "PreviewInbox (SMTP Offline)";
+            }
+
             var log = new EmailNotificationLog
             {
                 RecipientEmployeeId = managerId,
@@ -220,7 +268,7 @@ namespace EnterpriseAttendance.Services.Notifications
                 Subject = $"Bkran Group Connect — Direct Reports Weekly Attendance ({monday:MMM dd} – {friday:MMM dd})",
                 BodyHtml = sb.ToString(),
                 AttachmentPath = "Weekly_Attendance_Report.xlsx",
-                DeliveryStatus = "PreviewInbox"
+                DeliveryStatus = deliveryStatus
             };
 
             await _context.EmailNotificationLogs.AddAsync(log);
@@ -231,7 +279,7 @@ namespace EnterpriseAttendance.Services.Notifications
                 DirectReportCount = directReports.Count,
                 AverageAttendancePct = directReports.Count > 0 ? (double)directReports.Count(t => dailyRecords.Count(d => d.EmployeeId == t.Id && d.AttendanceType == AttendanceType.Office) >= 3) / directReports.Count * 100 : 0,
                 ReportHtmlContent = sb.ToString(),
-                DeliveryStatus = "PreviewInbox"
+                DeliveryStatus = deliveryStatus
             };
             await _context.WeeklyReportLogs.AddAsync(reportLog);
             await _context.SaveChangesAsync();

@@ -2,6 +2,8 @@ using System;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -43,10 +45,14 @@ namespace EnterpriseAttendance.Web.Controllers
 
         [HttpGet("/Auth/Login")]
         [HttpGet("/")]
-        public IActionResult Login()
+        public async Task<IActionResult> Login([FromQuery] bool logout = false)
         {
-            // If already authenticated, redirect to appropriate dashboard
-            if (User.Identity?.IsAuthenticated == true)
+            if (logout)
+            {
+                await HttpContext.SignOutAsync("DemoCookies");
+                await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+            }
+            else if (User.Identity?.IsAuthenticated == true)
             {
                 var role = User.FindFirst("AppRole")?.Value;
                 if (role == "Administrator" || role == "PowerUser")
@@ -56,6 +62,15 @@ namespace EnterpriseAttendance.Web.Controllers
 
             ViewBag.UseMockTelemetry = _config.GetValue<bool>("TelemetrySettings:UseMockTelemetry", true);
             return View("~/Views/Auth/Login.cshtml");
+        }
+
+        [HttpGet("/Auth/Logout")]
+        [HttpPost("/Auth/Logout")]
+        public async Task<IActionResult> Logout()
+        {
+            await HttpContext.SignOutAsync("DemoCookies");
+            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+            return Redirect("/Auth/Login?logout=true");
         }
 
         /// <summary>
@@ -81,7 +96,6 @@ namespace EnterpriseAttendance.Web.Controllers
                 return View("~/Views/Auth/Login.cshtml");
             }
 
-            // Set app-specific claims (role, employee ID) for the SSO session
             var identity = User.Identity as ClaimsIdentity;
             if (identity != null)
             {
@@ -93,15 +107,6 @@ namespace EnterpriseAttendance.Web.Controllers
                 return Redirect("/Admin");
 
             return Redirect("/Manager");
-        }
-
-        [HttpGet("/Auth/Logout")]
-        public IActionResult Logout()
-        {
-            return SignOut(new Microsoft.AspNetCore.Authentication.AuthenticationProperties
-            {
-                RedirectUri = "/Auth/Login"
-            });
         }
     }
 }

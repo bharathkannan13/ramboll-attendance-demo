@@ -1,0 +1,8 @@
+{
+  "name": "ramboll-attendance-demo",
+  "version": "1.0.0",
+  "description": "Enterprise Attendance Platform - .NET 8",
+  "scripts": {
+    "build": "bash build.sh"
+  }
+}

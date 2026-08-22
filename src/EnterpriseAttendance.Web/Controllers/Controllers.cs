@@ -114,7 +114,7 @@ namespace EnterpriseAttendance.Web.Controllers
         /// <summary>
         /// Explicit Logout: Wipes all session cookies and redirects cleanly to login page
         /// </summary>
-        [HttpPost("logout")]
+        [HttpPost("api-logout")]
         public async Task<IActionResult> LogoutApi()
         {
             await HttpContext.SignOutAsync("DemoCookies");

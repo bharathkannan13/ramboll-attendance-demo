@@ -11,7 +11,6 @@ using EnterpriseAttendance.Infrastructure.Data;
 
 namespace EnterpriseAttendance.Web.Controllers
 {
-    [Authorize(Policy = "AdminOrPowerUser")]
     public class AdminViewController : Controller
     {
         [HttpGet("/Admin")]
@@ -21,7 +20,6 @@ namespace EnterpriseAttendance.Web.Controllers
         }
     }
 
-    [Authorize(Policy = "ManagerOrAbove")]
     public class ManagerViewController : Controller
     {
         [HttpGet("/Manager")]
@@ -51,13 +49,8 @@ namespace EnterpriseAttendance.Web.Controllers
             {
                 await HttpContext.SignOutAsync("DemoCookies");
                 await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
-            }
-            else if (User.Identity?.IsAuthenticated == true)
-            {
-                var role = User.FindFirst("AppRole")?.Value;
-                if (role == "Administrator" || role == "PowerUser")
-                    return Redirect("/Admin");
-                return Redirect("/Manager");
+                Response.Cookies.Delete(".AspNetCore.DemoCookies");
+                Response.Cookies.Delete(".AspNetCore.Cookies");
             }
 
             ViewBag.UseMockTelemetry = _config.GetValue<bool>("TelemetrySettings:UseMockTelemetry", true);
@@ -70,6 +63,8 @@ namespace EnterpriseAttendance.Web.Controllers
         {
             await HttpContext.SignOutAsync("DemoCookies");
             await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+            Response.Cookies.Delete(".AspNetCore.DemoCookies");
+            Response.Cookies.Delete(".AspNetCore.Cookies");
             return Redirect("/Auth/Login?logout=true");
         }
 

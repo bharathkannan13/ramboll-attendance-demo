@@ -120,7 +120,20 @@ namespace EnterpriseAttendance.Infrastructure.Data.SeedData
             await context.Employees.AddRangeAsync(vpEng, vpSales);
             await context.SaveChangesAsync();
 
-            // Level 3: Managers (including Kwame Mensah)
+            // Level 3: Managers (including Bharath Kannan & Kwame Mensah)
+            var mgrBharath = new Employee
+            {
+                EntraObjectId = "00000000-0000-0000-0000-000000000099",
+                Email = "kannanbharath015@gmail.com",
+                FullName = "Bharath Kannan",
+                Title = "Engineering Manager - Chennai Campus",
+                EmployeeCode = "BK-IND-099",
+                DepartmentId = departments[1].Id,
+                ManagerId = vpEng.Id,
+                OfficeLocationId = offices[0].Id,
+                Role = UserRole.Manager
+            };
+
             var mgrEngChennai = new Employee
             {
                 EntraObjectId = "00000000-0000-0000-0000-000000000004",
@@ -147,15 +160,17 @@ namespace EnterpriseAttendance.Infrastructure.Data.SeedData
                 Role = UserRole.Manager
             };
 
-            await context.Employees.AddRangeAsync(mgrEngChennai, mgrEngNoida);
+            await context.Employees.AddRangeAsync(mgrBharath, mgrEngChennai, mgrEngNoida);
             await context.SaveChangesAsync();
 
-            // Level 4: Engineers reporting to Kwame Mensah
-            var anand = new Employee { EntraObjectId = Guid.NewGuid().ToString(), Email = "anand.kumar@bkrangroup.com", FullName = "Anand Kumar", Title = "Senior Software Engineer", EmployeeCode = "BK-IND-007", DepartmentId = departments[1].Id, ManagerId = mgrEngChennai.Id, OfficeLocationId = offices[0].Id, Role = UserRole.Manager };
-            var deepa = new Employee { EntraObjectId = Guid.NewGuid().ToString(), Email = "deepa.srinivasan@bkrangroup.com", FullName = "Deepa Srinivasan", Title = "Full Stack Developer", EmployeeCode = "BK-IND-008", DepartmentId = departments[1].Id, ManagerId = mgrEngChennai.Id, OfficeLocationId = offices[0].Id, Role = UserRole.Manager };
-            var karthik = new Employee { EntraObjectId = Guid.NewGuid().ToString(), Email = "karthik.rajan@bkrangroup.com", FullName = "Karthik Rajan", Title = "Cloud Lead Architect", EmployeeCode = "BK-IND-009", DepartmentId = departments[1].Id, ManagerId = mgrEngChennai.Id, OfficeLocationId = offices[0].Id, Role = UserRole.Manager };
+            // Level 4: Direct reports reporting to Bharath Kannan & Kwame Mensah
+            var anand = new Employee { EntraObjectId = Guid.NewGuid().ToString(), Email = "anand.kumar@bkrangroup.com", FullName = "Anand Kumar", Title = "Senior Software Engineer", EmployeeCode = "BK-IND-007", DepartmentId = departments[1].Id, ManagerId = mgrBharath.Id, OfficeLocationId = offices[0].Id, Role = UserRole.Manager };
+            var deepa = new Employee { EntraObjectId = Guid.NewGuid().ToString(), Email = "deepa.srinivasan@bkrangroup.com", FullName = "Deepa Srinivasan", Title = "Full Stack Developer", EmployeeCode = "BK-IND-008", DepartmentId = departments[1].Id, ManagerId = mgrBharath.Id, OfficeLocationId = offices[0].Id, Role = UserRole.Manager };
+            var karthik = new Employee { EntraObjectId = Guid.NewGuid().ToString(), Email = "karthik.rajan@bkrangroup.com", FullName = "Karthik Rajan", Title = "Cloud Lead Architect", EmployeeCode = "BK-IND-009", DepartmentId = departments[1].Id, ManagerId = mgrBharath.Id, OfficeLocationId = offices[0].Id, Role = UserRole.Manager };
+            var vikram = new Employee { EntraObjectId = Guid.NewGuid().ToString(), Email = "vikram.seth@bkrangroup.com", FullName = "Vikram Seth", Title = "Frontend Engineer", EmployeeCode = "BK-IND-010", DepartmentId = departments[1].Id, ManagerId = mgrBharath.Id, OfficeLocationId = offices[0].Id, Role = UserRole.Manager };
+            var suresh = new Employee { EntraObjectId = Guid.NewGuid().ToString(), Email = "suresh.raina@bkrangroup.com", FullName = "Suresh Raina", Title = "DevOps Specialist", EmployeeCode = "BK-IND-011", DepartmentId = departments[1].Id, ManagerId = mgrBharath.Id, OfficeLocationId = offices[0].Id, Role = UserRole.Manager };
 
-            await context.Employees.AddRangeAsync(anand, deepa, karthik);
+            await context.Employees.AddRangeAsync(anand, deepa, karthik, vikram, suresh);
             await context.SaveChangesAsync();
 
             // Level 5: Sub-reporting employees reporting to Karthik Rajan

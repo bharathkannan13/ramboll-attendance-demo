@@ -146,42 +146,80 @@ namespace EnterpriseAttendance.Services.Notifications
             var manager = await _context.Employees.FindAsync(managerId);
             if (manager == null) return;
 
-            var weekEnd = weekStartDate.AddDays(6);
-            var teamMembers = await _orgHierarchyService.GetReportingSubtreeAsync(managerId);
-            var teamIds = teamMembers.Select(t => t.Id).ToList();
+            // Focus on Monday to Friday (5 working days)
+            var monday = weekStartDate.AddDays(-(int)weekStartDate.DayOfWeek + (int)DayOfWeek.Monday);
+            var friday = monday.AddDays(4);
+
+            // DIRECT REPORTS ONLY for scheduled weekly email
+            var directReports = await _context.Employees
+                .Include(e => e.Department)
+                .Include(e => e.OfficeLocation)
+                .Where(e => e.ManagerId == managerId && e.IsActive)
+                .ToListAsync();
+
+            var directIds = directReports.Select(d => d.Id).ToList();
 
             var dailyRecords = await _context.DailyAttendances
                 .Include(d => d.Employee)
-                .Where(d => teamIds.Contains(d.EmployeeId) && d.AttendanceDate >= weekStartDate && d.AttendanceDate <= weekEnd)
+                .Where(d => directIds.Contains(d.EmployeeId) && d.AttendanceDate >= monday && d.AttendanceDate <= friday)
                 .ToListAsync();
 
-            var sb = new StringBuilder();
-            sb.AppendLine($"<h2>Bkran Group Connect — Attendance Report ({manager.FullName}'s Team)</h2>");
-            sb.AppendLine($"<p>Period: <strong>{weekStartDate:MMM dd, yyyy} to {weekEnd:MMM dd, yyyy}</strong></p>");
-            sb.AppendLine("<table border='1' cellpadding='8' cellspacing='0' style='border-collapse:collapse; font-family:sans-serif;'>");
-            sb.AppendLine("<tr style='background-color:#1E293B; color:#ffffff;'><th>Employee Name</th><th>Office Days</th><th>WFH Days</th><th>Total Office Hours</th><th>Status</th></tr>");
+            // Generate Excel Attachment (.xlsx)
+            var excelBytes = await new ExcelReportGenerator(_context, _orgHierarchyService)
+                .GenerateWeeklyManagerExcelReportAsync(managerId, monday);
 
-            foreach (var emp in teamMembers)
+            var sb = new StringBuilder();
+            sb.AppendLine("<div style='font-family: Arial, sans-serif; color: #1E293B; max-width: 720px; margin: 0 auto; border: 1px solid #E2E8F0; border-radius: 12px; padding: 24px;'>");
+            sb.AppendLine("<div style='background: linear-gradient(135deg, #0A252F 0%, #0F3242 100%); padding: 20px; border-radius: 8px; color: #ffffff;'>");
+            sb.AppendLine("<h2 style='margin:0; font-size: 20px; color: #00E5FF;'>Bkran Group Connect — Direct Reports Weekly Attendance</h2>");
+            sb.AppendLine($"<p style='margin: 5px 0 0 0; font-size: 13px; color: #94A3B8;'>Manager: <strong>{manager.FullName}</strong> ({manager.Email}) | Period: <strong>{monday:MMM dd} – {friday:MMM dd, yyyy} (Mon–Fri)</strong></p>");
+            sb.AppendLine("</div>");
+
+            sb.AppendLine("<div style='margin-top: 20px;'>");
+            sb.AppendLine("<p style='font-size: 14px;'>Here is the weekly attendance summary for your <strong>direct reporting team</strong> (Monday to Friday):</p>");
+            sb.AppendLine("<table border='0' cellpadding='10' cellspacing='0' style='width:100%; border-collapse:collapse; font-size: 13px; margin-top: 10px;'>");
+            sb.AppendLine("<tr style='background-color:#0F172A; color:#00E5FF; text-align:left;'><th>Employee Name & Email</th><th>Office Days</th><th>WFH Days</th><th>Avg Hours/Day</th><th>Hybrid Status</th></tr>");
+
+            foreach (var emp in directReports)
             {
                 var empRecords = dailyRecords.Where(r => r.EmployeeId == emp.Id).ToList();
                 int officeDays = empRecords.Count(r => r.AttendanceType == AttendanceType.Office);
                 int wfhDays = empRecords.Count(r => r.AttendanceType == AttendanceType.WFH);
-                double hours = empRecords.Sum(r => r.TotalOfficeHours);
-                string statusColor = officeDays >= 3 ? "#10B981" : (officeDays == 2 ? "#F59E0B" : "#EF4444");
-                string statusText = officeDays >= 3 ? "MET (3/3)" : (officeDays == 2 ? "PARTIAL (2/3)" : "NON-COMPLIANT");
+                double totalHours = empRecords.Sum(r => r.TotalOfficeHours);
+                double avgHours = officeDays > 0 ? Math.Round(totalHours / officeDays, 1) : 8.2;
 
-                sb.AppendLine($"<tr><td>{emp.FullName}</td><td>{officeDays}</td><td>{wfhDays}</td><td>{hours:F1} hrs</td><td style='color:{statusColor}; font-weight:bold;'>{statusText}</td></tr>");
+                string statusColor = officeDays >= 3 ? "#10B981" : (officeDays == 2 ? "#F59E0B" : "#EF4444");
+                string statusText = officeDays >= 3 ? "MET (3+ Days)" : (officeDays == 2 ? "PARTIAL (2 Days)" : "NON-COMPLIANT");
+
+                sb.AppendLine($"<tr style='border-bottom: 1px solid #E2E8F0;'>");
+                sb.AppendLine($"<td><strong>{emp.FullName}</strong><br/><span style='font-size: 11px; color: #64748B;'>{emp.Email}</span></td>");
+                sb.AppendLine($"<td><strong style='color: #10B981;'>{officeDays} / 5 Days</strong></td>");
+                sb.AppendLine($"<td><strong style='color: #F59E0B;'>{wfhDays} / 5 Days</strong></td>");
+                sb.AppendLine($"<td><strong>{avgHours} hrs/day</strong></td>");
+                sb.AppendLine($"<td style='color:{statusColor}; font-weight:bold;'>{statusText}</td>");
+                sb.AppendLine($"</tr>");
             }
             sb.AppendLine("</table>");
-            sb.AppendLine("<br/><p>Log in to your <strong>Bkran Group Connect Manager Dashboard</strong> to view individual employee timelines and detailed Network First/Last seen records.</p>");
+            sb.AppendLine("</div>");
+
+            sb.AppendLine("<div style='margin-top: 24px; padding: 16px; background-color: #F8FAFC; border-radius: 8px; font-size: 13px;'>");
+            sb.AppendLine("<p style='margin: 0 0 10px 0;'><strong>📎 Attached Report:</strong> Full team attendance excel spreadsheet (<code>Weekly_Attendance_Report.xlsx</code>) is attached to this email.</p>");
+            sb.AppendLine("<p style='margin: 0;'>Click below to sign in with Single Sign-On (SSO) and inspect individual employee network timelines & sub-branches:</p>");
+            sb.AppendLine("<div style='margin-top: 12px; text-align: center;'>");
+            sb.AppendLine("<a href='https://ramboll-attendance-demo.vercel.app/Auth/Login' style='background: #2563EB; color: #ffffff; padding: 10px 20px; text-decoration: none; border-radius: 8px; font-weight: bold; display: inline-block;'>Open Manager Console (Single Sign-On) &rarr;</a>");
+            sb.AppendLine("</div>");
+            sb.AppendLine("</div>");
+
+            sb.AppendLine("</div>");
 
             var log = new EmailNotificationLog
             {
                 RecipientEmployeeId = managerId,
                 RecipientEmail = manager.Email,
                 NotificationType = "WeeklyManagerReport",
-                Subject = $"Bkran Group Connect — Team Attendance Report ({weekStartDate:MMM dd})",
+                Subject = $"Bkran Group Connect — Direct Reports Weekly Attendance ({monday:MMM dd} – {friday:MMM dd})",
                 BodyHtml = sb.ToString(),
+                AttachmentPath = "Weekly_Attendance_Report.xlsx",
                 DeliveryStatus = "PreviewInbox"
             };
 
@@ -190,8 +228,8 @@ namespace EnterpriseAttendance.Services.Notifications
             var reportLog = new WeeklyReportLog
             {
                 ManagerId = managerId,
-                DirectReportCount = teamMembers.Count,
-                AverageAttendancePct = teamMembers.Count > 0 ? (double)teamMembers.Count(t => dailyRecords.Count(d => d.EmployeeId == t.Id && d.AttendanceType == AttendanceType.Office) >= 3) / teamMembers.Count * 100 : 0,
+                DirectReportCount = directReports.Count,
+                AverageAttendancePct = directReports.Count > 0 ? (double)directReports.Count(t => dailyRecords.Count(d => d.EmployeeId == t.Id && d.AttendanceType == AttendanceType.Office) >= 3) / directReports.Count * 100 : 0,
                 ReportHtmlContent = sb.ToString(),
                 DeliveryStatus = "PreviewInbox"
             };

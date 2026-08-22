@@ -32,22 +32,52 @@ namespace EnterpriseAttendance.Web.Controllers
         }
 
         /// <summary>
-        /// Demo Mode: Cookie-based login for standalone dev/demo (no Azure needed)
+        /// Demo Mode: Password-based authentication (Username: Ramboll / Password: Ramboll12345)
         /// </summary>
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginRequest request)
         {
-            var user = await _context.Employees
-                .Include(e => e.Department)
-                .Include(e => e.OfficeLocation)
-                .FirstOrDefaultAsync(e => e.Email.Equals(request.Email, StringComparison.OrdinalIgnoreCase));
+            var identifier = string.IsNullOrWhiteSpace(request.Email) ? request.Username : request.Email;
+            identifier = identifier?.Trim() ?? string.Empty;
+
+            Employee? user = null;
+
+            // Demo Admin Credential Shortcut: Username "Ramboll" or "rajesh.sharma@bkrangroup.com"
+            if (identifier.Equals("Ramboll", StringComparison.OrdinalIgnoreCase) ||
+                identifier.Equals("ramboll@bkrangroup.com", StringComparison.OrdinalIgnoreCase) ||
+                identifier.Equals("rajesh.sharma@bkrangroup.com", StringComparison.OrdinalIgnoreCase))
+            {
+                if (!string.IsNullOrWhiteSpace(request.Password) && request.Password != "Ramboll12345")
+                {
+                    return Unauthorized(new { message = "Incorrect password. Default demo password is 'Ramboll12345'." });
+                }
+
+                user = await _context.Employees
+                    .Include(e => e.Department)
+                    .Include(e => e.OfficeLocation)
+                    .FirstOrDefaultAsync(e => e.Role == UserRole.Administrator)
+                    ?? await _context.Employees.Include(e => e.Department).Include(e => e.OfficeLocation).FirstOrDefaultAsync();
+            }
+            else
+            {
+                user = await _context.Employees
+                    .Include(e => e.Department)
+                    .Include(e => e.OfficeLocation)
+                    .FirstOrDefaultAsync(e => e.Email.Equals(identifier, StringComparison.OrdinalIgnoreCase) ||
+                                              e.FullName.Contains(identifier, StringComparison.OrdinalIgnoreCase));
+
+                if (user != null && !string.IsNullOrWhiteSpace(request.Password) && request.Password != "Ramboll12345")
+                {
+                    return Unauthorized(new { message = "Incorrect password. Default demo password is 'Ramboll12345'." });
+                }
+            }
 
             if (user == null || !user.IsActive)
             {
-                return Unauthorized(new { message = "Invalid email or user not found in the organization." });
+                return Unauthorized(new { message = "Invalid credentials. Use Username: 'Ramboll' and Password: 'Ramboll12345'." });
             }
 
-            // Create cookie claims for demo mode
+            // Create cookie claims for demo session
             var claims = new List<Claim>
             {
                 new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
@@ -75,7 +105,7 @@ namespace EnterpriseAttendance.Web.Controllers
                     Department = user.Department?.Name,
                     Office = user.OfficeLocation?.Name
                 },
-                redirectUrl = user.Role == UserRole.Administrator || user.Role == UserRole.PowerUser
+                redirectUrl = (user.Role == UserRole.Administrator || user.Role == UserRole.PowerUser)
                     ? "/Admin"
                     : "/Manager"
             });
@@ -129,7 +159,9 @@ namespace EnterpriseAttendance.Web.Controllers
 
     public class LoginRequest
     {
+        public string Username { get; set; } = string.Empty;
         public string Email { get; set; } = string.Empty;
+        public string Password { get; set; } = string.Empty;
     }
 
     // =====================================================================

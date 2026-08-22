@@ -1,0 +1,107 @@
+using System;
+using System.Linq;
+using System.Security.Claims;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using EnterpriseAttendance.Infrastructure.Data;
+
+namespace EnterpriseAttendance.Web.Controllers
+{
+    [Authorize(Policy = "AdminOrPowerUser")]
+    public class AdminViewController : Controller
+    {
+        [HttpGet("/Admin")]
+        public IActionResult Index()
+        {
+            return View("~/Views/Admin/Index.cshtml");
+        }
+    }
+
+    [Authorize(Policy = "ManagerOrAbove")]
+    public class ManagerViewController : Controller
+    {
+        [HttpGet("/Manager")]
+        public IActionResult Index()
+        {
+            return View("~/Views/Manager/Index.cshtml");
+        }
+    }
+
+    [AllowAnonymous]
+    public class AuthViewController : Controller
+    {
+        private readonly AttendanceDbContext _context;
+        private readonly IConfiguration _config;
+
+        public AuthViewController(AttendanceDbContext context, IConfiguration config)
+        {
+            _context = context;
+            _config = config;
+        }
+
+        [HttpGet("/Auth/Login")]
+        [HttpGet("/")]
+        public IActionResult Login()
+        {
+            // If already authenticated, redirect to appropriate dashboard
+            if (User.Identity?.IsAuthenticated == true)
+            {
+                var role = User.FindFirst("AppRole")?.Value;
+                if (role == "Administrator" || role == "PowerUser")
+                    return Redirect("/Admin");
+                return Redirect("/Manager");
+            }
+
+            ViewBag.UseMockTelemetry = _config.GetValue<bool>("TelemetrySettings:UseMockTelemetry", true);
+            return View("~/Views/Auth/Login.cshtml");
+        }
+
+        /// <summary>
+        /// SSO Callback: After Entra ID SSO login, look up user email and establish session
+        /// </summary>
+        [HttpGet("/Auth/SsoCallback")]
+        [Authorize]
+        public async Task<IActionResult> SsoCallback()
+        {
+            var email = User.FindFirst(ClaimTypes.Email)?.Value
+                      ?? User.FindFirst("preferred_username")?.Value
+                      ?? User.FindFirst("upn")?.Value;
+
+            if (string.IsNullOrEmpty(email))
+                return RedirectToAction("Login");
+
+            var employee = await _context.Employees
+                .FirstOrDefaultAsync(e => e.Email.Equals(email, StringComparison.OrdinalIgnoreCase));
+
+            if (employee == null)
+            {
+                ViewBag.Error = "Your email is not registered in the system. Please contact your administrator.";
+                return View("~/Views/Auth/Login.cshtml");
+            }
+
+            // Set app-specific claims (role, employee ID) for the SSO session
+            var identity = User.Identity as ClaimsIdentity;
+            if (identity != null)
+            {
+                identity.AddClaim(new Claim("AppRole", employee.Role.ToString()));
+                identity.AddClaim(new Claim("EmployeeId", employee.Id.ToString()));
+            }
+
+            if (employee.Role == Core.Enums.UserRole.Administrator || employee.Role == Core.Enums.UserRole.PowerUser)
+                return Redirect("/Admin");
+
+            return Redirect("/Manager");
+        }
+
+        [HttpGet("/Auth/Logout")]
+        public IActionResult Logout()
+        {
+            return SignOut(new Microsoft.AspNetCore.Authentication.AuthenticationProperties
+            {
+                RedirectUri = "/Auth/Login"
+            });
+        }
+    }
+}

@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\EnterpriseAttendance.Core\EnterpriseAttendance.Core.csproj" />
+    <ProjectReference Include="..\EnterpriseAttendance.Infrastructure\EnterpriseAttendance.Infrastructure.csproj" />
+  </ItemGroup>
+
+</Project>

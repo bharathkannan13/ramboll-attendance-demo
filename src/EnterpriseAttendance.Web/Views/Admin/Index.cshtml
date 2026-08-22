@@ -1,0 +1,414 @@
+@{
+    ViewData["Title"] = "Admin Dashboard";
+}
+
+<!-- Enterprise Dashboard Banner -->
+<div class="card" style="background: linear-gradient(135deg, rgba(30, 41, 59, 0.9) 0%, rgba(15, 23, 42, 0.9) 100%); border-left: 5px solid #00E5FF; padding: 1.8rem;">
+    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1.2rem;">
+        <div>
+            <div style="font-size: 0.8rem; font-weight: 700; color: #00E5FF; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 0.35rem;">
+                <i class="fa-solid fa-building-user"></i> Executive Command Center
+            </div>
+            <h2 style="font-size: 1.6rem; font-weight: 800; color: #fff;">Bkran Group Connect — Admin Dashboard</h2>
+            <p style="color: var(--text-sub); font-size: 0.9rem; margin-top: 0.25rem;">Branch-by-Branch Organization Hierarchy & Full Telemetry Attendance Inspection</p>
+        </div>
+        <div style="display: flex; gap: 0.85rem; align-items: center;">
+            <span class="badge badge-success" style="padding: 0.5rem 0.9rem; font-size: 0.82rem;"><i class="fa-solid fa-earth-asia"></i> Scope: India Regional Offices Only</span>
+            <span class="badge badge-warning" style="padding: 0.5rem 0.9rem; font-size: 0.82rem;"><i class="fa-solid fa-shield-halved"></i> Admin Access</span>
+        </div>
+    </div>
+</div>
+
+<!-- Executive Metric KPI Cards -->
+<div class="grid">
+    <div class="card" style="margin-bottom: 0; padding: 1.4rem; border-top: 3px solid #3B82F6;">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <div>
+                <div style="color: var(--text-sub); font-size: 0.8rem; font-weight: 600;">Total Managed Employees</div>
+                <div style="font-size: 1.6rem; font-weight: 800; color: #fff; margin-top: 0.3rem;">18,450</div>
+                <div style="font-size: 0.76rem; color: var(--accent-green); margin-top: 0.2rem;"><i class="fa-solid fa-check-double"></i> India Locations Synced</div>
+            </div>
+            <div style="width: 46px; height: 46px; border-radius: 12px; background: rgba(59, 130, 246, 0.15); display: flex; align-items: center; justify-content: center; color: #3B82F6; font-size: 1.3rem;">
+                <i class="fa-solid fa-users"></i>
+            </div>
+        </div>
+    </div>
+
+    <div class="card" style="margin-bottom: 0; padding: 1.4rem; border-top: 3px solid #10B981;">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <div>
+                <div style="color: var(--text-sub); font-size: 0.8rem; font-weight: 600;">Hybrid Policy Compliance Rate</div>
+                <div style="font-size: 1.6rem; font-weight: 800; color: #fff; margin-top: 0.3rem;">84.5%</div>
+                <div style="font-size: 0.76rem; color: var(--accent-green); margin-top: 0.2rem;"><i class="fa-solid fa-arrow-trend-up"></i> Target 3 Days/Week Met</div>
+            </div>
+            <div style="width: 46px; height: 46px; border-radius: 12px; background: rgba(16, 185, 129, 0.15); display: flex; align-items: center; justify-content: center; color: #10B981; font-size: 1.3rem;">
+                <i class="fa-solid fa-chart-line"></i>
+            </div>
+        </div>
+    </div>
+
+    <div class="card" style="margin-bottom: 0; padding: 1.4rem; border-top: 3px solid #00E5FF;">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <div>
+                <div style="color: var(--text-sub); font-size: 0.8rem; font-weight: 600;">Managed Intune Laptops</div>
+                <div style="font-size: 1.6rem; font-weight: 800; color: #fff; margin-top: 0.3rem;">100%</div>
+                <div style="font-size: 0.76rem; color: #00E5FF; margin-top: 0.2rem;"><i class="fa-solid fa-laptop-medical"></i> Intune & Defender Guard Active</div>
+            </div>
+            <div style="width: 46px; height: 46px; border-radius: 12px; background: rgba(0, 229, 255, 0.15); display: flex; align-items: center; justify-content: center; color: #00E5FF; font-size: 1.3rem;">
+                <i class="fa-solid fa-laptop-code"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Department & Manager Filters -->
+<div class="card" style="padding: 1.3rem;">
+    <div style="display: flex; gap: 1.5rem; align-items: center; flex-wrap: wrap;">
+        <div>
+            <label style="font-size: 0.8rem; color: var(--text-sub); display: block; margin-bottom: 0.4rem; font-weight: 700;">Filter Org Tree by Department:</label>
+            <select id="deptFilter" onchange="onFilterChange()" style="padding: 0.6rem 0.9rem; background: #0F172A; border: 1px solid var(--card-border); border-radius: 8px; color: #fff; font-size: 0.9rem; min-width: 230px;">
+                <option value="ALL">All Departments (Full Organization)</option>
+                <option value="Software Engineering">Software Engineering</option>
+                <option value="IT Infrastructure & Security">IT Infrastructure & Security</option>
+                <option value="Human Resources">Human Resources</option>
+                <option value="Sales & Business Development">Sales & Business Development</option>
+                <option value="Executive Leadership">Executive Leadership</option>
+            </select>
+        </div>
+
+        <div>
+            <label style="font-size: 0.8rem; color: var(--text-sub); display: block; margin-bottom: 0.4rem; font-weight: 700;">Re-Root Tree by Manager Name:</label>
+            <div style="display: flex; gap: 0.5rem;">
+                <input type="text" id="managerInput" placeholder="e.g. Rajesh Sharma, Sarah Connor, Kwame..." style="padding: 0.6rem 0.9rem; background: #0F172A; border: 1px solid var(--card-border); border-radius: 8px; color: #fff; font-size: 0.9rem; width: 280px;" />
+                <button onclick="onFilterChange()" class="btn btn-primary" style="padding: 0.6rem 1.1rem;"><i class="fa-solid fa-filter"></i> Apply Root</button>
+                <button onclick="resetFilters()" class="btn btn-secondary" style="padding: 0.6rem 0.9rem;"><i class="fa-solid fa-rotate-left"></i> Reset</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Section 1: Branch-by-Branch Interactive Org Tree -->
+<div class="card">
+    <div class="card-header">
+        <div class="card-title"><i class="fa-solid fa-sitemap" style="color: #00E5FF;"></i> Teams-Style Branch Tree (Click [+] to Expand Sub-Branches & Click Inspect on Any Node)</div>
+        <span style="font-size: 0.8rem; color: var(--text-muted);">Level-by-level branch expansion</span>
+    </div>
+    
+    <div style="padding: 1.5rem; background: rgba(15, 23, 42, 0.7); border-radius: 12px; border: 1px solid var(--card-border); overflow-x: auto; min-height: 180px;">
+        <div id="orgChartTreeContainer">
+            <div style="color: var(--text-muted);"><i class="fa-solid fa-spinner fa-spin"></i> Building Org Branch Tree...</div>
+        </div>
+    </div>
+</div>
+
+<!-- Section 2: Expandable Direct Reporting Table -->
+<div class="card" id="subordinatesCard" style="border-top: 4px solid #10B981;">
+    <div class="card-header">
+        <div class="card-title" id="selectedManagerHeader">
+            <i class="fa-solid fa-user-tie" style="color: #10B981;"></i> Direct Reports of <span id="currentManagerName" style="color: #60A5FA;">Rajesh Sharma</span> (Click Inspect for Full User Data)
+        </div>
+        <span class="badge badge-success" id="subordinateCountBadge">Direct Reports Level-1</span>
+    </div>
+
+    <!-- Table -->
+    <table id="subordinatesTable">
+        <thead>
+            <tr>
+                <th style="width: 45px;"></th>
+                <th>Employee Name</th>
+                <th>Title</th>
+                <th>Department</th>
+                <th>Office Location</th>
+                <th>First Seen (Corporate Network)</th>
+                <th>Last Seen (Corporate Network)</th>
+                <th>Net Hours</th>
+                <th>Days in Office</th>
+                <th>Inspect Action</th>
+            </tr>
+        </thead>
+        <tbody id="subordinatesBody">
+            <!-- Loaded dynamically -->
+        </tbody>
+    </table>
+</div>
+
+<!-- User Full Attendance Inspecting Modal -->
+<div id="userModal" style="display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.85); backdrop-filter: blur(14px); z-index: 2000; justify-content: center; align-items: center;">
+    <div class="card" style="width: 900px; max-width: 94vw; max-height: 90vh; overflow-y: auto; background: #0B132B; border: 1px solid #00E5FF; box-shadow: 0 10px 50px rgba(0,229,255,0.25);">
+        <div class="card-header">
+            <div class="card-title" id="modalUserName" style="color: #00E5FF; font-size: 1.2rem;"><i class="fa-solid fa-microscope"></i> Employee Attendance Inspection Panel</div>
+            <button onclick="closeUserModal()" class="btn btn-secondary" style="padding: 0.3rem 0.75rem;">&times; Close Inspection</button>
+        </div>
+        <div id="modalUserContent" style="padding-top: 0.5rem;">
+            <!-- Loaded dynamically -->
+        </div>
+    </div>
+</div>
+
+<script>
+    let activeManagerId = 1;
+
+    document.addEventListener("DOMContentLoaded", function () {
+        loadOrgTree();
+        loadDirectReports(activeManagerId, "Rajesh Sharma", "subordinatesBody");
+    });
+
+    async function onFilterChange() {
+        const dept = document.getElementById('deptFilter').value;
+        const mgrName = document.getElementById('managerInput').value.trim();
+
+        try {
+            const url = `/api/admin/org-chart-filter?department=${encodeURIComponent(dept)}&managerName=${encodeURIComponent(mgrName)}`;
+            const res = await fetch(url);
+            const tree = await res.json();
+            
+            const container = document.getElementById('orgChartTreeContainer');
+            if (!tree) {
+                container.innerHTML = '<div style="color: var(--accent-warning);"><i class="fa-solid fa-triangle-exclamation"></i> No manager found matching that name in India offices.</div>';
+                return;
+            }
+            container.innerHTML = renderOrgNode(tree);
+            selectManager(tree.id, tree.fullName);
+        } catch (e) {
+            console.error('Error filtering org tree:', e);
+        }
+    }
+
+    function resetFilters() {
+        document.getElementById('deptFilter').value = 'ALL';
+        document.getElementById('managerInput').value = '';
+        onFilterChange();
+    }
+
+    async function loadOrgTree() {
+        onFilterChange();
+    }
+
+    function renderOrgNode(node) {
+        if (!node) return '';
+
+        let reportsHtml = '';
+        if (node.directReports && node.directReports.length > 0) {
+            reportsHtml = `<div id="branch-child-${node.id}" style="margin-left: 2rem; border-left: 2px dashed rgba(255,255,255,0.18); padding-left: 1rem; display: flex; flex-direction: column; gap: 0.65rem; margin-top: 0.65rem;">`;
+            node.directReports.forEach(child => {
+                reportsHtml += renderOrgNode(child);
+            });
+            reportsHtml += '</div>';
+        }
+
+        const isSelected = (node.id === activeManagerId);
+        const borderStyle = isSelected ? 'border: 2px solid #00E5FF; background: rgba(0, 229, 255, 0.15); shadow: 0 0 15px rgba(0,229,255,0.3);' : 'border: 1px solid var(--card-border); background: rgba(30, 41, 59, 0.85);';
+        
+        const hasChildren = (node.directReports && node.directReports.length > 0);
+        const expandBtn = hasChildren ? `<button onclick="toggleBranchNode(${node.id}, event)" class="btn btn-secondary" style="padding: 0.2rem 0.55rem; font-size: 0.76rem; border-color: #00E5FF; color: #00E5FF;">[+] Sub-Branch</button>` : '';
+
+        return `
+            <div style="margin-bottom: 0.4rem;">
+                <div onclick="selectManager(${node.id}, '${node.fullName.replace("'", "\\'")}')" style="display: inline-flex; align-items: center; gap: 0.75rem; ${borderStyle} padding: 0.65rem 1.1rem; border-radius: 10px; cursor: pointer; transition: all 0.25s;" onmouseover="this.style.borderColor='#00E5FF'" onmouseout="if(${node.id} !== activeManagerId) this.style.borderColor='var(--card-border)'">
+                    <i class="fa-solid fa-user-tie" style="color: #00E5FF; font-size: 1.15rem;"></i>
+                    <div>
+                        <div style="font-weight: 700; color: #fff; font-size: 0.95rem;">${node.fullName}</div>
+                        <div style="font-size: 0.78rem; color: var(--text-sub);">${node.title} • ${node.department}</div>
+                    </div>
+                    <span class="badge badge-success" style="margin-left: 0.6rem; font-size: 0.72rem;">3/3 Office Days [MET]</span>
+                    ${expandBtn}
+                    <button onclick="inspectUser(${node.id}, event)" class="btn btn-primary" style="padding: 0.25rem 0.6rem; font-size: 0.76rem; margin-left: 0.4rem;"><i class="fa-solid fa-microscope"></i> Inspect Tracking</button>
+                </div>
+                ${reportsHtml}
+            </div>
+        `;
+    }
+
+    function toggleBranchNode(nodeId, evt) {
+        evt.stopPropagation();
+        const childContainer = document.getElementById(`branch-child-${nodeId}`);
+        if (childContainer) {
+            if (childContainer.style.display === 'none') {
+                childContainer.style.display = 'flex';
+            } else {
+                childContainer.style.display = 'none';
+            }
+        }
+    }
+
+    function selectManager(managerId, managerName) {
+        activeManagerId = managerId;
+        loadDirectReports(managerId, managerName, "subordinatesBody");
+    }
+
+    async function loadDirectReports(managerId, managerName, targetTbodyId) {
+        try {
+            if (targetTbodyId === "subordinatesBody") {
+                document.getElementById('currentManagerName').innerText = managerName;
+            }
+
+            const res = await fetch('/api/admin/direct-reports/' + managerId);
+            const reports = await res.json();
+
+            const tbody = document.getElementById(targetTbodyId);
+            tbody.innerHTML = '';
+
+            if (reports.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="10" style="text-align:center; color: var(--text-muted); padding: 1rem;">No direct reports found for this manager.</td></tr>';
+                return;
+            }
+
+            reports.forEach(u => {
+                const statusBadge = u.status === 'MET' 
+                    ? '<span class="badge badge-success">MET (12+ Days/Mo)</span>'
+                    : '<span class="badge badge-warning">PARTIAL</span>';
+
+                const expandBtn = u.hasSubordinates 
+                    ? `<button onclick="toggleExpandRow(${u.id}, '${u.fullName.replace("'", "\\'")}', this)" class="btn btn-secondary" style="padding: 0.2rem 0.55rem; font-size: 0.78rem; border-color: #00E5FF; color: #00E5FF;">[+] Sub-Branch</button>`
+                    : '<span style="color: var(--text-muted); font-size: 0.75rem;">—</span>';
+
+                const tr = document.createElement('tr');
+                tr.id = `user-row-${u.id}`;
+                tr.innerHTML = `
+                    <td style="text-align: center;">${expandBtn}</td>
+                    <td><strong>${u.fullName}</strong></td>
+                    <td>${u.title}</td>
+                    <td>${u.department}</td>
+                    <td>${u.officeLocation}</td>
+                    <td><strong style="color: #60A5FA;">${u.firstSeen}</strong></td>
+                    <td><strong style="color: #FBBF24;">${u.lastSeen}</strong></td>
+                    <td><strong>${u.totalOfficeHours} hrs</strong></td>
+                    <td><strong>${u.officeDaysCount} Days</strong></td>
+                    <td>
+                        <button onclick="inspectUser(${u.id}, event)" class="btn btn-primary" style="padding: 0.35rem 0.8rem; font-size: 0.8rem;">
+                            <i class="fa-solid fa-microscope"></i> Inspect Tracking
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+
+                if (u.hasSubordinates) {
+                    const subTr = document.createElement('tr');
+                    subTr.id = `sub-row-${u.id}`;
+                    subTr.style.display = 'none';
+                    subTr.innerHTML = `
+                        <td colspan="10" style="padding: 0.85rem 1.5rem; background: rgba(15, 23, 42, 0.95); border-left: 4px solid #00E5FF;">
+                            <div style="font-size: 0.88rem; font-weight: 700; color: #00E5FF; margin-bottom: 0.6rem;">
+                                <i class="fa-solid fa-level-down-alt"></i> Sub-Branch Reporting to ${u.fullName}:
+                            </div>
+                            <table style="width: 100%; border-collapse: collapse;">
+                                <thead>
+                                    <tr style="background: rgba(30, 41, 59, 0.9);">
+                                        <th style="width: 45px;"></th>
+                                        <th>Subordinate Name</th>
+                                        <th>Title</th>
+                                        <th>Department</th>
+                                        <th>Office Location</th>
+                                        <th>First Seen</th>
+                                        <th>Last Seen</th>
+                                        <th>Net Hours</th>
+                                        <th>Days in Office</th>
+                                        <th>Inspect Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="nested-tbody-${u.id}">
+                                    <tr><td colspan="10" style="color: var(--text-muted);">Loading sub-branch...</td></tr>
+                                </tbody>
+                            </table>
+                        </td>
+                    `;
+                    tbody.appendChild(subTr);
+                }
+            });
+        } catch (e) {
+            console.error('Error loading direct reports:', e);
+        }
+    }
+
+    async function toggleExpandRow(managerId, managerName, btn) {
+        const subTr = document.getElementById(`sub-row-${managerId}`);
+        if (!subTr) return;
+
+        if (subTr.style.display === 'none') {
+            subTr.style.display = '';
+            btn.innerHTML = '[-] Collapse Sub-Branch';
+            await loadDirectReports(managerId, managerName, `nested-tbody-${managerId}`);
+        } else {
+            subTr.style.display = 'none';
+            btn.innerHTML = '[+] Sub-Branch';
+        }
+    }
+
+    async function inspectUser(employeeId, evt) {
+        if (evt) evt.stopPropagation();
+
+        try {
+            const res = await fetch('/api/attendance/user-details/' + employeeId);
+            const data = await res.json();
+
+            const emp = data.employee;
+            const metrics = data.metrics;
+            const history = data.dailyHistory;
+
+            document.getElementById('modalUserName').innerHTML = `<i class="fa-solid fa-microscope"></i> ${emp.fullName} — Attendance Inspection Panel`;
+
+            let historyHtml = '';
+            history.forEach(h => {
+                const typeBadge = h.type === 'Office' 
+                    ? '<span class="badge badge-success">Office Presence</span>' 
+                    : '<span class="badge badge-warning">Remote (WFH)</span>';
+
+                historyHtml += `
+                    <tr>
+                        <td>${h.date} (${h.dayOfWeek})</td>
+                        <td>${typeBadge}</td>
+                        <td><strong style="color:#60A5FA;">${h.firstSeen}</strong></td>
+                        <td><strong style="color:#FBBF24;">${h.lastSeen}</strong></td>
+                        <td><strong>${h.hours} hrs</strong></td>
+                        <td>${h.officeLocation}</td>
+                    </tr>
+                `;
+            });
+
+            document.getElementById('modalUserContent').innerHTML = `
+                <div class="grid" style="grid-template-columns: repeat(3, 1fr); margin-bottom: 1.25rem;">
+                    <div style="background: rgba(30, 41, 59, 0.7); padding: 1.1rem; border-radius: 10px; border: 1px solid var(--card-border);">
+                        <div style="color: var(--text-sub); font-size: 0.76rem; font-weight: 700;">Employee Code & Title</div>
+                        <div style="font-weight: 800; font-size: 1rem; color: #fff; margin-top: 0.3rem;">${emp.employeeCode} - ${emp.title}</div>
+                        <div style="color: var(--text-muted); font-size: 0.76rem; margin-top: 0.3rem;">Reporting Manager: ${emp.managerName}</div>
+                    </div>
+                    <div style="background: rgba(30, 41, 59, 0.7); padding: 1.1rem; border-radius: 10px; border: 1px solid var(--card-border);">
+                        <div style="color: var(--text-sub); font-size: 0.76rem; font-weight: 700;">Assigned Managed Laptop</div>
+                        <div style="font-weight: 800; font-size: 1rem; color: #fff; margin-top: 0.3rem;">${emp.deviceName}</div>
+                        <div style="color: #34D399; font-size: 0.76rem; margin-top: 0.3rem;"><i class="fa-solid fa-shield-check"></i> Intune Status: ${emp.complianceStatus}</div>
+                    </div>
+                    <div style="background: rgba(30, 41, 59, 0.7); padding: 1.1rem; border-radius: 10px; border: 1px solid var(--card-border);">
+                        <div style="color: var(--text-sub); font-size: 0.76rem; font-weight: 700;">Hybrid Compliance Status</div>
+                        <div style="font-weight: 800; font-size: 1.05rem; color: #34D399; margin-top: 0.3rem;">${metrics.complianceStatus}</div>
+                        <div style="color: var(--text-muted); font-size: 0.76rem; margin-top: 0.3rem;">Total Net Hours: ${metrics.totalOfficeHours} hrs</div>
+                    </div>
+                </div>
+
+                <h4 style="font-size: 1.05rem; font-weight: 700; margin-bottom: 0.75rem; color: #fff;"><i class="fa-solid fa-clock-rotate-left"></i> Full Date-by-Date Attendance Inspection (First/Last Seen & Office Working Hours)</h4>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Attendance Type</th>
+                            <th>First Seen (Network Connect)</th>
+                            <th>Last Seen (Network Disconnect)</th>
+                            <th>Net Working Hours</th>
+                            <th>Network Location</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${historyHtml}
+                    </tbody>
+                </table>
+            `;
+
+            document.getElementById('userModal').style.display = 'flex';
+        } catch (e) {
+            console.error('Error inspecting user:', e);
+        }
+    }
+
+    function closeUserModal() {
+        document.getElementById('userModal').style.display = 'none';
+    }
+</script>

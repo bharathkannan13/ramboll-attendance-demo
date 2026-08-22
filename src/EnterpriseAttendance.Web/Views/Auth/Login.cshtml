@@ -1,0 +1,172 @@
+@{
+    ViewData["Title"] = "Sign In — Bkran Group Connect";
+    var useMock = ViewBag.UseMockTelemetry ?? true;
+}
+
+<div style="max-width: 520px; margin: 4rem auto;">
+    <div class="card" style="text-align: center; padding: 3rem 2.5rem; border-top: 4px solid #00E5FF; background: linear-gradient(135deg, rgba(18, 26, 47, 0.95) 0%, rgba(11, 19, 43, 0.95) 100%);">
+        <div style="width: 70px; height: 70px; border-radius: 20px; background: linear-gradient(135deg, #3B82F6 0%, #00E5FF 100%); display: flex; align-items: center; justify-content: center; color: #fff; font-size: 2.2rem; margin: 0 auto 1.5rem auto; box-shadow: 0 10px 25px rgba(0, 229, 255, 0.35);">
+            <i class="fa-solid fa-cube"></i>
+        </div>
+        <h2 style="font-size: 1.7rem; font-weight: 800; color: #fff; letter-spacing: -0.02em;">Bkran Group Connect</h2>
+        <p style="color: var(--text-sub); font-size: 0.9rem; margin-top: 0.35rem; margin-bottom: 2.2rem;">Enterprise Attendance & Workforce Analytics Platform</p>
+
+        @if (ViewBag.Error != null)
+        {
+            <div style="background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.4); color: #f87171; padding: 1rem; border-radius: 12px; margin-bottom: 1.5rem; font-size: 0.9rem;">
+                <i class="fa-solid fa-circle-exclamation"></i> @ViewBag.Error
+            </div>
+        }
+
+        @if ((bool)useMock)
+        {
+            <!-- ===== DEMO MODE: Email-based role selection ===== -->
+            <div id="demo-login-section">
+                <div style="background: rgba(59, 130, 246, 0.08); border: 1px solid rgba(59, 130, 246, 0.25); border-radius: 12px; padding: 1rem; margin-bottom: 1.5rem;">
+                    <p style="color: #93c5fd; font-size: 0.82rem; margin: 0;">
+                        <i class="fa-solid fa-flask" style="color: #60a5fa; margin-right: 0.3rem;"></i>
+                        <strong>Demo Mode</strong> — Sign in as any user from the organization directory
+                    </p>
+                </div>
+
+                <div style="margin-bottom: 1.5rem; text-align: left;">
+                    <label style="display: block; color: var(--text-sub); font-size: 0.85rem; font-weight: 600; margin-bottom: 0.5rem;">
+                        <i class="fa-solid fa-envelope" style="color: #00E5FF; margin-right: 0.3rem;"></i> Email Address
+                    </label>
+                    <input id="demo-email" type="email" placeholder="e.g. rajesh.sharma@bkrangroup.com" 
+                        style="width: 100%; padding: 0.85rem 1rem; border-radius: 10px; border: 1px solid var(--card-border); background: rgba(15, 23, 42, 0.6); color: #fff; font-size: 0.95rem; outline: none; box-sizing: border-box;"
+                        onfocus="this.style.borderColor='#00E5FF'" onblur="this.style.borderColor='var(--card-border)'" />
+                </div>
+
+                <button id="demo-login-btn" onclick="handleDemoLogin()" class="btn btn-primary" 
+                    style="width: 100%; justify-content: center; padding: 1.1rem; font-size: 0.95rem; font-weight: 700; border-radius: 12px; cursor: pointer;">
+                    <i class="fa-solid fa-right-to-bracket"></i> Sign In
+                </button>
+
+                <div id="login-error" style="display: none; background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.4); color: #f87171; padding: 0.8rem; border-radius: 10px; margin-top: 1rem; font-size: 0.85rem;"></div>
+                <div id="login-success" style="display: none; background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.4); color: #34d399; padding: 0.8rem; border-radius: 10px; margin-top: 1rem; font-size: 0.85rem;"></div>
+
+                <div style="margin-top: 1.8rem; border-top: 1px solid var(--card-border); padding-top: 1.2rem;">
+                    <p style="color: var(--text-muted); font-size: 0.78rem; margin-bottom: 0.6rem;">Quick Access — Demo Accounts</p>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.6rem;">
+                        <button onclick="quickLogin('rajesh.sharma@bkrangroup.com')" 
+                            style="padding: 0.7rem; border-radius: 10px; border: 1px solid var(--card-border); background: rgba(59, 130, 246, 0.08); color: #93c5fd; font-size: 0.78rem; cursor: pointer; transition: all 0.2s ease;">
+                            <i class="fa-solid fa-user-tie" style="color: #3B82F6;"></i><br/>Rajesh Sharma<br/><span style="font-size: 0.7rem; color: var(--text-muted);">Admin (CEO)</span>
+                        </button>
+                        <button onclick="quickLogin('kwame.mensah@bkrangroup.com')" 
+                            style="padding: 0.7rem; border-radius: 10px; border: 1px solid var(--card-border); background: rgba(16, 185, 129, 0.08); color: #6ee7b7; font-size: 0.78rem; cursor: pointer; transition: all 0.2s ease;">
+                            <i class="fa-solid fa-user-shield" style="color: #10B981;"></i><br/>Kwame Mensah<br/><span style="font-size: 0.7rem; color: var(--text-muted);">Manager (Chennai)</span>
+                        </button>
+                        <button onclick="quickLogin('priya.verma@bkrangroup.com')" 
+                            style="padding: 0.7rem; border-radius: 10px; border: 1px solid var(--card-border); background: rgba(139, 92, 246, 0.08); color: #c4b5fd; font-size: 0.78rem; cursor: pointer; transition: all 0.2s ease;">
+                            <i class="fa-solid fa-user-shield" style="color: #8B5CF6;"></i><br/>Priya Verma<br/><span style="font-size: 0.7rem; color: var(--text-muted);">Manager (Hyderabad)</span>
+                        </button>
+                        <button onclick="quickLogin('amit.patel@bkrangroup.com')" 
+                            style="padding: 0.7rem; border-radius: 10px; border: 1px solid var(--card-border); background: rgba(245, 158, 11, 0.08); color: #fcd34d; font-size: 0.78rem; cursor: pointer; transition: all 0.2s ease;">
+                            <i class="fa-solid fa-user" style="color: #F59E0B;"></i><br/>Amit Patel<br/><span style="font-size: 0.7rem; color: var(--text-muted);">VP Engineering</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        }
+        else
+        {
+            <!-- ===== LIVE MODE: Microsoft SSO ===== -->
+            <div style="margin-bottom: 1.5rem;">
+                <div style="background: rgba(16, 185, 129, 0.08); border: 1px solid rgba(16, 185, 129, 0.25); border-radius: 12px; padding: 1rem; margin-bottom: 1.5rem;">
+                    <p style="color: #6ee7b7; font-size: 0.82rem; margin: 0;">
+                        <i class="fa-solid fa-shield-halved" style="color: #10B981; margin-right: 0.3rem;"></i>
+                        <strong>Secured by Microsoft Entra ID</strong> — Single Sign-On with your corporate account
+                    </p>
+                </div>
+
+                <a href="/Auth/SsoCallback" class="btn btn-primary"
+                    style="width: 100%; justify-content: center; padding: 1.1rem; font-size: 1rem; font-weight: 700; border-radius: 12px; text-decoration: none; display: flex; align-items: center; gap: 0.7rem; box-sizing: border-box;">
+                    <svg width="21" height="21" viewBox="0 0 21 21" xmlns="http://www.w3.org/2000/svg" fill="currentColor">
+                        <rect x="1" y="1" width="9" height="9" fill="#F25022"/>
+                        <rect x="11" y="1" width="9" height="9" fill="#7FBA00"/>
+                        <rect x="1" y="11" width="9" height="9" fill="#00A4EF"/>
+                        <rect x="11" y="11" width="9" height="9" fill="#FFB900"/>
+                    </svg>
+                    Sign in with Microsoft
+                </a>
+            </div>
+        }
+
+        <div style="margin-top: 2rem; border-top: 1px solid var(--card-border); padding-top: 1.3rem; text-align: left; font-size: 0.82rem; color: var(--text-muted); line-height: 1.5;">
+            <p><i class="fa-solid fa-shield-halved" style="color: #00E5FF; margin-right: 0.3rem;"></i> <strong>Zero-Touch Telemetry:</strong> Attendance is tracked automatically via Entra ID, Intune, and device network telemetry. No manual check-in required.</p>
+        </div>
+    </div>
+</div>
+
+<script>
+async function handleDemoLogin() {
+    const email = document.getElementById('demo-email').value.trim();
+    if (!email) {
+        showError('Please enter an email address');
+        return;
+    }
+
+    const btn = document.getElementById('demo-login-btn');
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Authenticating...';
+    hideMessages();
+
+    try {
+        const res = await fetch('/api/Auth/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email: email })
+        });
+
+        const data = await res.json();
+
+        if (res.ok && data.success) {
+            showSuccess(`Welcome, ${data.user.FullName} (${data.user.Role}). Redirecting...`);
+            setTimeout(() => { window.location.href = data.redirectUrl; }, 800);
+        } else {
+            showError(data.message || 'Authentication failed. Email not found in the organization.');
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fa-solid fa-right-to-bracket"></i> Sign In';
+        }
+    } catch (err) {
+        showError('Network error. Please try again.');
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fa-solid fa-right-to-bracket"></i> Sign In';
+    }
+}
+
+function quickLogin(email) {
+    document.getElementById('demo-email').value = email;
+    handleDemoLogin();
+}
+
+function showError(msg) {
+    const el = document.getElementById('login-error');
+    el.style.display = 'block';
+    el.innerHTML = '<i class="fa-solid fa-circle-exclamation"></i> ' + msg;
+    document.getElementById('login-success').style.display = 'none';
+}
+
+function showSuccess(msg) {
+    const el = document.getElementById('login-success');
+    el.style.display = 'block';
+    el.innerHTML = '<i class="fa-solid fa-circle-check"></i> ' + msg;
+    document.getElementById('login-error').style.display = 'none';
+}
+
+function hideMessages() {
+    document.getElementById('login-error').style.display = 'none';
+    document.getElementById('login-success').style.display = 'none';
+}
+
+// Enter key to submit
+document.addEventListener('DOMContentLoaded', () => {
+    const input = document.getElementById('demo-email');
+    if (input) {
+        input.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') handleDemoLogin();
+        });
+    }
+});
+</script>

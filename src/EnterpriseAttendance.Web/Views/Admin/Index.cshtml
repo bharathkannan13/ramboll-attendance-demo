@@ -16,20 +16,20 @@
             <a href="/Manager" class="btn btn-primary" style="font-size: 0.85rem; padding: 0.65rem 1.1rem; text-decoration: none;">
                 <i class="fa-solid fa-user-shield"></i> Switch to Manager Console
             </a>
-            <span class="badge badge-success" style="padding: 0.55rem 1rem; font-size: 0.82rem;"><i class="fa-solid fa-earth-asia"></i> Scope: India Regional Offices</span>
+            <span class="badge badge-success" style="padding: 0.55rem 1rem; font-size: 0.82rem;"><i class="fa-solid fa-earth-asia"></i> Scope: India Regional Offices Only</span>
             <span class="badge badge-warning" style="padding: 0.55rem 1rem; font-size: 0.82rem;"><i class="fa-solid fa-shield-halved"></i> Executive Admin</span>
         </div>
     </div>
 </div>
 
-<!-- Executive Metric KPI Cards (Ocean-Tick Glass Panels) -->
+<!-- Executive Metric KPI Cards -->
 <div class="grid" style="grid-template-columns: repeat(3, 1fr); gap: 1.6rem;">
     <div class="card" style="margin-bottom: 0; padding: 1.6rem; border-top: 4px solid #3B82F6; background: linear-gradient(135deg, rgba(15, 32, 67, 0.7) 0%, rgba(6, 16, 36, 0.8) 100%);">
         <div style="display: flex; justify-content: space-between; align-items: center;">
             <div>
-                <div style="color: var(--text-sub); font-size: 0.82rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;">Total Managed Workforce</div>
+                <div style="color: var(--text-sub); font-size: 0.82rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;">Total India Workforce</div>
                 <div style="font-size: 1.85rem; font-weight: 800; color: #fff; margin-top: 0.35rem;">18,450</div>
-                <div style="font-size: 0.78rem; color: #34D399; margin-top: 0.25rem;"><i class="fa-solid fa-check-double"></i> All India Regional Offices Synced</div>
+                <div style="font-size: 0.78rem; color: #34D399; margin-top: 0.25rem;"><i class="fa-solid fa-check-double"></i> India Locations Synced via Graph API</div>
             </div>
             <div style="width: 52px; height: 52px; border-radius: 16px; background: rgba(59, 130, 246, 0.15); border: 1px solid rgba(59, 130, 246, 0.3); display: flex; align-items: center; justify-content: center; color: #3B82F6; font-size: 1.4rem; box-shadow: 0 4px 15px rgba(59, 130, 246, 0.2);">
                 <i class="fa-solid fa-users"></i>
@@ -55,7 +55,7 @@
             <div>
                 <div style="color: var(--text-sub); font-size: 0.82rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;">Intune & Defender Managed</div>
                 <div style="font-size: 1.85rem; font-weight: 800; color: #fff; margin-top: 0.35rem;">100%</div>
-                <div style="font-size: 0.78rem; color: #00E5FF; margin-top: 0.25rem;"><i class="fa-solid fa-shield-halved"></i> Active Telemetry Guard</div>
+                <div style="font-size: 0.78rem; color: #00E5FF; margin-top: 0.25rem;"><i class="fa-solid fa-shield-halved"></i> Active Telemetry Guard (India Devices)</div>
             </div>
             <div style="width: 52px; height: 52px; border-radius: 16px; background: rgba(0, 229, 255, 0.15); border: 1px solid rgba(0, 229, 255, 0.3); display: flex; align-items: center; justify-content: center; color: #00E5FF; font-size: 1.4rem; box-shadow: 0 4px 15px rgba(0, 229, 255, 0.2);">
                 <i class="fa-solid fa-laptop-code"></i>
@@ -64,7 +64,77 @@
     </div>
 </div>
 
-<!-- Department & Manager Filters (Ocean Control Bar) -->
+<!-- FEATURE 1 & FEATURE 2: Interactive Executive Analytics Section -->
+<div class="grid" style="grid-template-columns: 1fr 1fr; gap: 1.6rem; margin-top: 1.85rem;">
+    <!-- Feature 1: Per-Office Branch Occupancy Heatmap & Donut Chart -->
+    <div class="card" style="margin-bottom: 0;">
+        <div class="card-header">
+            <div class="card-title">
+                <i class="fa-solid fa-chart-pie" style="color: #00E5FF;"></i> Feature 1: Per-Office Branch Occupancy (India Offices)
+            </div>
+            <span class="badge badge-success"><i class="fa-solid fa-location-dot"></i> 5 Indian Hubs</span>
+        </div>
+        <div style="padding: 0.5rem; height: 260px; display: flex; justify-content: center; align-items: center;">
+            <canvas id="branchOccupancyChart"></canvas>
+        </div>
+    </div>
+
+    <!-- Feature 2: Departmental Compliance Comparison Bar Chart -->
+    <div class="card" style="margin-bottom: 0;">
+        <div class="card-header">
+            <div class="card-title">
+                <i class="fa-solid fa-chart-column" style="color: #10B981;"></i> Feature 2: Department Compliance Comparison
+            </div>
+            <span class="badge badge-success"><i class="fa-solid fa-users"></i> Department Matrix</span>
+        </div>
+        <div style="padding: 0.5rem; height: 260px; display: flex; justify-content: center; align-items: center;">
+            <canvas id="deptComplianceChart"></canvas>
+        </div>
+    </div>
+</div>
+
+<!-- FEATURE 5: Microsoft 365 Graph Sync Health & Pipeline Monitor (India Filtered) -->
+<div class="card" style="border: 1px solid rgba(0, 229, 255, 0.25); background: linear-gradient(135deg, rgba(6, 20, 44, 0.9) 0%, rgba(10, 25, 47, 0.9) 100%);">
+    <div class="card-header">
+        <div class="card-title">
+            <i class="fa-solid fa-heart-pulse" style="color: #00E5FF;"></i> Feature 5: Microsoft 365 Graph API Ecosystem Sync Health
+        </div>
+        <span class="badge badge-success" style="background: rgba(0, 229, 255, 0.15); color: #00E5FF; border-color: rgba(0, 229, 255, 0.4);">
+            <i class="fa-solid fa-filter"></i> Filter: India Region Accounts Only
+        </span>
+    </div>
+
+    <div class="grid" style="grid-template-columns: repeat(3, 1fr); gap: 1.2rem; margin-bottom: 0;">
+        <div style="background: rgba(3, 8, 22, 0.8); border: 1px solid var(--card-border); padding: 1.2rem; border-radius: 14px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                <span style="font-weight: 700; color: #fff; font-size: 0.92rem;"><i class="fa-brands fa-microsoft" style="color: #00E5FF; margin-right: 0.4rem;"></i> Entra ID User Sync</span>
+                <span class="badge badge-success">ACTIVE SYNC</span>
+            </div>
+            <div style="font-size: 0.82rem; color: var(--text-sub);">Filter: <code>officeLocation IN (Chennai, Noida, Hyderabad, Gurugram, Bangalore)</code></div>
+            <div style="font-size: 0.78rem; color: #34D399; margin-top: 0.4rem;"><i class="fa-solid fa-circle-check"></i> 18,450 India Employees Synced</div>
+        </div>
+
+        <div style="background: rgba(3, 8, 22, 0.8); border: 1px solid var(--card-border); padding: 1.2rem; border-radius: 14px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                <span style="font-weight: 700; color: #fff; font-size: 0.92rem;"><i class="fa-solid fa-laptop-medical" style="color: #3B82F6; margin-right: 0.4rem;"></i> Intune Device Inventory</span>
+                <span class="badge badge-success">COMPLIANT</span>
+            </div>
+            <div style="font-size: 0.82rem; color: var(--text-sub);">Scope: Indian Workforce Laptops Only (Excludes Denmark/Non-India)</div>
+            <div style="font-size: 0.78rem; color: #60A5FA; margin-top: 0.4rem;"><i class="fa-solid fa-shield-check"></i> 100% Intune Compliance Verified</div>
+        </div>
+
+        <div style="background: rgba(3, 8, 22, 0.8); border: 1px solid var(--card-border); padding: 1.2rem; border-radius: 14px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                <span style="font-weight: 700; color: #fff; font-size: 0.92rem;"><i class="fa-solid fa-shield-halved" style="color: #10B981; margin-right: 0.4rem;"></i> Defender Telemetry Pipeline</span>
+                <span class="badge badge-success">INGESTING</span>
+            </div>
+            <div style="font-size: 0.82rem; color: var(--text-sub);">Pulse: Bitwise CIDR Subnet & Corporate SSID Network Classification</div>
+            <div style="font-size: 0.78rem; color: #A7F3D0; margin-top: 0.4rem;"><i class="fa-solid fa-bolt"></i> Real-Time Pulse Active</div>
+        </div>
+    </div>
+</div>
+
+<!-- Department & Manager Filters -->
 <div class="card" style="padding: 1.4rem; border: 1px solid rgba(0, 229, 255, 0.2); background: linear-gradient(135deg, rgba(10, 25, 47, 0.9) 0%, rgba(6, 16, 36, 0.9) 100%);">
     <div style="display: flex; gap: 1.8rem; align-items: center; flex-wrap: wrap;">
         <div>
@@ -98,7 +168,7 @@
 <div class="card">
     <div class="card-header">
         <div class="card-title"><i class="fa-solid fa-sitemap" style="color: #00E5FF;"></i> Teams-Style Branch Hierarchy Tree (Click [+] to Expand Sub-Branches)</div>
-        <span class="badge badge-success"><i class="fa-solid fa-shield-check"></i> Auto-Synced via Entra ID</span>
+        <span class="badge badge-success"><i class="fa-solid fa-shield-check"></i> Auto-Synced via Entra ID (India Only)</span>
     </div>
     
     <div style="padding: 1.6rem; background: rgba(3, 8, 22, 0.75); border-radius: 14px; border: 1px solid var(--card-border); overflow-x: auto; min-height: 180px;">
@@ -158,7 +228,68 @@
     document.addEventListener("DOMContentLoaded", function () {
         loadOrgTree();
         loadDirectReports(activeManagerId, "Rajesh Sharma", "subordinatesBody");
+        initCharts();
     });
+
+    async function initCharts() {
+        try {
+            // Feature 1: Branch Occupancy Chart
+            const branchRes = await fetch('/api/admin/branch-occupancy');
+            const branchData = await branchRes.json();
+            
+            const branchCtx = document.getElementById('branchOccupancyChart').getContext('2d');
+            new Chart(branchCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: branchData.map(b => b.City),
+                    datasets: [{
+                        data: branchData.map(b => b.OccupancyPercentage),
+                        backgroundColor: ['#00E5FF', '#3B82F6', '#10B981', '#F59E0B', '#A7F3D0'],
+                        borderColor: '#061024',
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: 'right', labels: { color: '#94A3B8', font: { family: 'Outfit', size: 11 } } }
+                    }
+                }
+            });
+
+            // Feature 2: Department Compliance Chart
+            const deptRes = await fetch('/api/admin/department-compliance');
+            const deptData = await deptRes.json();
+
+            const deptCtx = document.getElementById('deptComplianceChart').getContext('2d');
+            new Chart(deptCtx, {
+                type: 'bar',
+                data: {
+                    labels: deptData.map(d => d.Department.split(' ')[0]),
+                    datasets: [{
+                        label: 'Compliance %',
+                        data: deptData.map(d => d.CompliancePercentage),
+                        backgroundColor: ['#10B981', '#00E5FF', '#3B82F6', '#F59E0B', '#34D399'],
+                        borderRadius: 8
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: { min: 70, max: 100, ticks: { color: '#94A3B8' }, grid: { color: 'rgba(255,255,255,0.05)' } },
+                        x: { ticks: { color: '#94A3B8' }, grid: { display: false } }
+                    },
+                    plugins: {
+                        legend: { display: false }
+                    }
+                }
+            });
+        } catch (e) {
+            console.error('Error initializing charts:', e);
+        }
+    }
 
     async function onFilterChange() {
         const dept = document.getElementById('deptFilter').value;

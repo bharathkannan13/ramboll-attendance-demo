@@ -6,32 +6,38 @@
     <title>@ViewData["Title"] - Bkran Group Connect</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
     <style>
         :root {
-            --bg-dark: #070C18;
-            --bg-card: rgba(18, 26, 47, 0.75);
-            --card-border: rgba(255, 255, 255, 0.08);
-            --card-border-glow: rgba(59, 130, 246, 0.3);
+            --bg-dark: #030816;
+            --bg-ocean-deep: #061024;
+            --bg-card: rgba(10, 25, 47, 0.75);
+            --bg-card-secondary: rgba(15, 32, 67, 0.65);
+            --card-border: rgba(0, 229, 255, 0.16);
+            --card-border-hover: rgba(0, 229, 255, 0.45);
             --accent-cyan: #00E5FF;
-            --accent-blue: #3B82F6;
+            --accent-blue: #2563EB;
+            --accent-teal: #0EA5E9;
             --accent-green: #10B981;
             --accent-amber: #F59E0B;
             --accent-rose: #F43F5E;
-            --text-main: #F8FAFC;
+            --text-main: #FFFFFF;
             --text-sub: #94A3B8;
             --text-muted: #64748B;
+            --shadow-double: 0 25px 50px -12px rgba(0, 0, 0, 0.7), 0 0 30px rgba(0, 229, 255, 0.08);
+            --shadow-glow: 0 0 25px rgba(0, 229, 255, 0.35);
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
         
         body {
-            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-family: 'Outfit', 'Plus Jakarta Sans', sans-serif;
             background: var(--bg-dark);
             background-image: 
-                radial-gradient(at 10% 10%, rgba(59, 130, 246, 0.12) 0px, transparent 50%),
-                radial-gradient(at 90% 90%, rgba(16, 185, 129, 0.08) 0px, transparent 50%);
+                radial-gradient(at 15% 15%, rgba(0, 229, 255, 0.12) 0px, transparent 45%),
+                radial-gradient(at 85% 85%, rgba(37, 99, 235, 0.15) 0px, transparent 50%),
+                radial-gradient(at 50% 50%, rgba(16, 185, 129, 0.06) 0px, transparent 60%);
             background-attachment: fixed;
             color: var(--text-main);
             min-height: 100vh;
@@ -40,13 +46,34 @@
             overflow-x: hidden;
         }
 
-        /* Top Bar Navigation */
+        /* 3D Ambient Glowing Orbs Background Animation */
+        .ambient-orb {
+            position: fixed;
+            border-radius: 50%;
+            filter: blur(90px);
+            z-index: -1;
+            pointer-events: none;
+            opacity: 0.6;
+            animation: floatOrb 18s infinite ease-in-out alternate;
+        }
+        .ambient-orb-1 { width: 500px; height: 500px; background: rgba(0, 229, 255, 0.14); top: -100px; left: -100px; }
+        .ambient-orb-2 { width: 600px; height: 600px; background: rgba(37, 99, 235, 0.16); bottom: -150px; right: -150px; animation-delay: -9s; }
+        .ambient-orb-3 { width: 350px; height: 350px; background: rgba(16, 185, 129, 0.08); top: 40%; left: 50%; transform: translate(-50%, -50%); }
+
+        @@keyframes floatOrb {
+            0% { transform: translateY(0px) scale(1); }
+            50% { transform: translateY(-30px) scale(1.08); }
+            100% { transform: translateY(30px) scale(0.95); }
+        }
+
+        /* Double-Layer Top Bar Navigation */
         .navbar {
-            background: rgba(11, 19, 43, 0.85);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
+            background: rgba(4, 12, 28, 0.85);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
             border-bottom: 1px solid var(--card-border);
-            padding: 0.9rem 2.5rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), inset 0 -1px 0 rgba(0, 229, 255, 0.15);
+            padding: 0.85rem 3rem;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -56,32 +83,34 @@
         }
 
         .navbar-brand {
-            font-size: 1.3rem;
+            font-size: 1.35rem;
             font-weight: 800;
             color: #fff;
             display: flex;
             align-items: center;
-            gap: 0.85rem;
+            gap: 1rem;
             text-decoration: none;
             letter-spacing: -0.02em;
         }
 
         .navbar-brand-icon {
-            width: 40px;
-            height: 40px;
-            background: linear-gradient(135deg, #3B82F6 0%, #00E5FF 100%);
-            border-radius: 10px;
+            width: 44px;
+            height: 44px;
+            background: linear-gradient(135deg, #00E5FF 0%, #2563EB 100%);
+            border-radius: 14px;
             display: flex;
             align-items: center;
             justify-content: center;
             color: #fff;
-            font-size: 1.2rem;
-            box-shadow: 0 4px 15px rgba(0, 229, 255, 0.3);
+            font-size: 1.3rem;
+            box-shadow: 0 6px 20px rgba(0, 229, 255, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.4);
+            transition: transform 0.3s ease;
         }
+        .navbar-brand:hover .navbar-brand-icon { transform: rotate(8deg) scale(1.05); }
 
         .nav-links {
             display: flex;
-            gap: 1rem;
+            gap: 0.85rem;
             align-items: center;
         }
 
@@ -90,169 +119,207 @@
             text-decoration: none;
             font-weight: 600;
             font-size: 0.88rem;
-            padding: 0.55rem 1rem;
-            border-radius: 10px;
-            transition: all 0.25s ease;
+            padding: 0.6rem 1.1rem;
+            border-radius: 12px;
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
             display: flex;
             align-items: center;
-            gap: 0.5rem;
+            gap: 0.55rem;
+            border: 1px solid transparent;
         }
 
         .nav-link:hover, .nav-link.active {
             color: #fff;
-            background: rgba(255, 255, 255, 0.06);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(0, 229, 255, 0.1);
+            border-color: rgba(0, 229, 255, 0.25);
+            box-shadow: 0 4px 15px rgba(0, 229, 255, 0.15);
         }
 
-        /* Container */
+        /* Main Container */
         .container {
-            max-width: 1440px;
-            margin: 2rem auto;
-            padding: 0 2rem;
+            max-width: 1480px;
+            margin: 2.2rem auto;
+            padding: 0 2.5rem;
             width: 100%;
             flex: 1;
-            animation: fadeIn 0.4s ease-in-out;
+            animation: fadeIn 0.45s ease-in-out;
         }
 
         @@keyframes fadeIn {
-            from { opacity: 0; transform: translateY(8px); }
+            from { opacity: 0; transform: translateY(12px); }
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* Enterprise Glassmorphic Card */
+        /* Ultra-Premium Double-Layered Glass Card */
         .card {
-            background: var(--bg-card);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
+            background: linear-gradient(135deg, rgba(10, 25, 47, 0.85) 0%, rgba(6, 16, 36, 0.9) 100%);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
             border: 1px solid var(--card-border);
-            border-radius: 16px;
-            padding: 1.6rem;
-            margin-bottom: 1.75rem;
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4);
-            transition: border-color 0.25s ease;
+            border-radius: 20px;
+            padding: 1.8rem;
+            margin-bottom: 1.85rem;
+            box-shadow: var(--shadow-double);
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* Double-layer inner highlight frame */
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent 0%, rgba(0, 229, 255, 0.5) 50%, transparent 100%);
+            opacity: 0.7;
+        }
+
+        .card:hover {
+            border-color: var(--card-border-hover);
+            box-shadow: 0 30px 60px -12px rgba(0, 0, 0, 0.8), 0 0 35px rgba(0, 229, 255, 0.18);
+            transform: translateY(-3px);
         }
 
         .card-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 1.25rem;
+            margin-bottom: 1.4rem;
             border-bottom: 1px solid var(--card-border);
-            padding-bottom: 0.85rem;
+            padding-bottom: 1rem;
         }
 
         .card-title {
-            font-size: 1.15rem;
+            font-size: 1.2rem;
             font-weight: 700;
             color: #fff;
             display: flex;
             align-items: center;
-            gap: 0.65rem;
+            gap: 0.75rem;
             letter-spacing: -0.01em;
         }
 
-        /* Grid */
+        /* Multi-Column Grid */
         .grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 1.5rem;
-            margin-bottom: 1.75rem;
+            grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
+            gap: 1.6rem;
+            margin-bottom: 1.85rem;
         }
 
-        /* Status Badges */
+        /* Ultra Status Badges */
         .badge {
-            padding: 0.3rem 0.75rem;
-            border-radius: 20px;
+            padding: 0.35rem 0.85rem;
+            border-radius: 24px;
             font-size: 0.76rem;
             font-weight: 700;
             display: inline-flex;
             align-items: center;
-            gap: 0.35rem;
-            letter-spacing: 0.02em;
+            gap: 0.4rem;
+            letter-spacing: 0.03em;
+            text-transform: uppercase;
         }
-        .badge-success { background: rgba(16, 185, 129, 0.15); color: #34D399; border: 1px solid rgba(16, 185, 129, 0.35); }
-        .badge-warning { background: rgba(245, 158, 11, 0.15); color: #FBBF24; border: 1px solid rgba(245, 158, 11, 0.35); }
-        .badge-danger { background: rgba(244, 63, 94, 0.15); color: #FB7185; border: 1px solid rgba(244, 63, 94, 0.35); }
+        .badge-success { background: rgba(16, 185, 129, 0.15); color: #34D399; border: 1px solid rgba(16, 185, 129, 0.4); box-shadow: 0 2px 10px rgba(16, 185, 129, 0.2); }
+        .badge-warning { background: rgba(245, 158, 11, 0.15); color: #FBBF24; border: 1px solid rgba(245, 158, 11, 0.4); box-shadow: 0 2px 10px rgba(245, 158, 11, 0.2); }
+        .badge-danger { background: rgba(244, 63, 94, 0.15); color: #FB7185; border: 1px solid rgba(244, 63, 94, 0.4); box-shadow: 0 2px 10px rgba(244, 63, 94, 0.2); }
 
-        /* Tables */
-        table { width: 100%; border-collapse: collapse; margin-top: 0.5rem; }
+        /* Premium Ocean Table Styling */
+        table { width: 100%; border-collapse: separate; border-spacing: 0; margin-top: 0.5rem; }
         th {
             text-align: left;
-            padding: 0.85rem 1.1rem;
-            background: rgba(15, 23, 42, 0.7);
-            color: var(--text-sub);
+            padding: 0.95rem 1.2rem;
+            background: rgba(6, 16, 36, 0.9);
+            color: var(--accent-cyan);
             font-size: 0.78rem;
             font-weight: 700;
             text-transform: uppercase;
-            letter-spacing: 0.06em;
-            border-bottom: 1px solid var(--card-border);
+            letter-spacing: 0.08em;
+            border-top: 1px solid var(--card-border);
+            border-bottom: 2px solid var(--card-border);
         }
+        th:first-child { border-top-left-radius: 12px; }
+        th:last-child { border-top-right-radius: 12px; }
         td {
-            padding: 0.95rem 1.1rem;
-            border-bottom: 1px solid var(--card-border);
-            font-size: 0.9rem;
+            padding: 1.05rem 1.2rem;
+            border-bottom: 1px solid rgba(0, 229, 255, 0.08);
+            font-size: 0.92rem;
             color: var(--text-main);
             vertical-align: middle;
+            transition: background 0.2s ease;
         }
-        tr:hover { background: rgba(255, 255, 255, 0.025); }
+        tr:hover td { background: rgba(0, 229, 255, 0.03); }
 
-        /* Buttons */
+        /* Premium Buttons with Physics Ripples */
         .btn {
-            padding: 0.65rem 1.25rem;
-            border-radius: 10px;
-            font-weight: 600;
-            font-size: 0.85rem;
+            padding: 0.7rem 1.35rem;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 0.88rem;
             cursor: pointer;
             border: none;
             transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
             display: inline-flex;
             align-items: center;
-            gap: 0.55rem;
+            gap: 0.6rem;
             text-decoration: none;
+            position: relative;
+            overflow: hidden;
         }
+        .btn:active { transform: scale(0.97); }
+
         .btn-primary {
-            background: linear-gradient(135deg, #3B82F6 0%, #2563EB 100%);
+            background: linear-gradient(135deg, #00E5FF 0%, #2563EB 100%);
             color: #fff;
-            box-shadow: 0 4px 14px rgba(59, 130, 246, 0.35);
+            box-shadow: 0 4px 18px rgba(0, 229, 255, 0.35);
         }
         .btn-primary:hover {
             transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(59, 130, 246, 0.5);
+            box-shadow: 0 8px 25px rgba(0, 229, 255, 0.5);
+            filter: brightness(1.1);
         }
+
         .btn-secondary {
-            background: rgba(255, 255, 255, 0.06);
+            background: rgba(15, 32, 67, 0.7);
             color: var(--text-main);
             border: 1px solid var(--card-border);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
         }
         .btn-secondary:hover {
-            background: rgba(255, 255, 255, 0.12);
+            background: rgba(0, 229, 255, 0.12);
+            border-color: rgba(0, 229, 255, 0.4);
             transform: translateY(-2px);
+            color: #fff;
         }
 
         footer {
             text-align: center;
-            padding: 1.75rem;
+            padding: 2rem;
             color: var(--text-muted);
             font-size: 0.85rem;
             border-top: 1px solid var(--card-border);
-            background: rgba(7, 12, 24, 0.9);
-            margin-top: 3rem;
+            background: rgba(3, 8, 22, 0.95);
+            margin-top: 3.5rem;
         }
     </style>
 </head>
 <body>
+    <div class="ambient-orb ambient-orb-1"></div>
+    <div class="ambient-orb ambient-orb-2"></div>
+    <div class="ambient-orb ambient-orb-3"></div>
+
     <nav class="navbar">
         <a href="/" class="navbar-brand">
             <div class="navbar-brand-icon"><i class="fa-solid fa-cube"></i></div>
             <div>
-                <div>Bkran Group Connect</div>
-                <div style="font-size: 0.72rem; font-weight: 500; color: var(--text-sub);">Enterprise Attendance Analytics</div>
+                <div style="color: #fff;">Bkran Group Connect</div>
+                <div style="font-size: 0.72rem; font-weight: 500; color: var(--accent-cyan); letter-spacing: 0.05em;">Enterprise Attendance Analytics</div>
             </div>
         </a>
         <div class="nav-links">
             <a href="/Admin" class="nav-link"><i class="fa-solid fa-layer-group"></i> Admin Dashboard</a>
             <a href="/Manager" class="nav-link"><i class="fa-solid fa-users-viewfinder"></i> Manager Dashboard</a>
-            <a href="/Auth/Login" class="btn btn-secondary"><i class="fa-solid fa-arrow-right-to-bracket"></i> Switch Profile</a>
+            <a href="/Auth/Login" class="btn btn-secondary" style="padding: 0.5rem 1rem; font-size: 0.82rem;"><i class="fa-solid fa-arrow-right-to-bracket"></i> Switch Profile</a>
         </div>
     </nav>
 
@@ -261,7 +328,7 @@
     </div>
 
     <footer>
-        <p>&copy; 2026 Bkran Group Connect | Confidential Enterprise Solution | India Region Only</p>
+        <p>&copy; 2026 Bkran Group Connect | Confidential Enterprise Solution | India Regional Offices</p>
     </footer>
 </body>
 </html>

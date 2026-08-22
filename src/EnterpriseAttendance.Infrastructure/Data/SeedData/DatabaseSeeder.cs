@@ -124,7 +124,7 @@ namespace EnterpriseAttendance.Infrastructure.Data.SeedData
             var mgrBharath = new Employee
             {
                 EntraObjectId = "00000000-0000-0000-0000-000000000099",
-                Email = "kannanbharath015@gmail.com",
+                Email = "bharathkannan1154@gmail.com",
                 FullName = "Bharath Kannan",
                 Title = "Engineering Manager - Chennai Campus",
                 EmployeeCode = "BK-IND-099",

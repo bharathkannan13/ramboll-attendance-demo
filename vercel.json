@@ -1,6 +1,14 @@
 {
   "version": 2,
   "rewrites": [
-    { "source": "/(.*)", "destination": "/" }
-  ]
+    {
+      "source": "/(.*)",
+      "destination": "/"
+    }
+  ],
+  "functions": {
+    "api/**/*.cs": {
+      "runtime": "container"
+    }
+  }
 }

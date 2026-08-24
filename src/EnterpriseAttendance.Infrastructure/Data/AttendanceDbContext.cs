@@ -9,6 +9,7 @@ namespace EnterpriseAttendance.Infrastructure.Data
         {
         }
 
+        // Core Models
         public DbSet<Employee> Employees => Set<Employee>();
         public DbSet<Department> Departments => Set<Department>();
         public DbSet<OfficeLocation> OfficeLocations => Set<OfficeLocation>();
@@ -26,9 +27,46 @@ namespace EnterpriseAttendance.Infrastructure.Data
         public DbSet<WeeklyReportLog> WeeklyReportLogs => Set<WeeklyReportLog>();
         public DbSet<SystemConfiguration> SystemConfigurations => Set<SystemConfiguration>();
 
+        // 18-Table Enterprise Specification Sets
+        public DbSet<ApplicationOwnership> ApplicationOwnerships => Set<ApplicationOwnership>();
+        public DbSet<RoleMaster> RoleMasters => Set<RoleMaster>();
+        public DbSet<UserRoleEntity> UserRoles => Set<UserRoleEntity>();
+        public DbSet<PermissionMaster> PermissionMasters => Set<PermissionMaster>();
+        public DbSet<RolePermission> RolePermissions => Set<RolePermission>();
+        public DbSet<SecurityAuditLog> SecurityAuditLogs => Set<SecurityAuditLog>();
+        public DbSet<LoginSessionLog> LoginSessionLogs => Set<LoginSessionLog>();
+        public DbSet<ErrorLog> ErrorLogs => Set<ErrorLog>();
+        public DbSet<OfficeMaster> OfficeMasters => Set<OfficeMaster>();
+        public DbSet<WorkModeMaster> WorkModeMasters => Set<WorkModeMaster>();
+        public DbSet<RetentionConfig> RetentionConfigs => Set<RetentionConfig>();
+        public DbSet<BackupLog> BackupLogs => Set<BackupLog>();
+        public DbSet<ApiAccessLog> ApiAccessLogs => Set<ApiAccessLog>();
+        public DbSet<IntegrationConfig> IntegrationConfigs => Set<IntegrationConfig>();
+        public DbSet<DeviceMaster> DeviceMasters => Set<DeviceMaster>();
+        public DbSet<AttendanceRiskLog> AttendanceRiskLogs => Set<AttendanceRiskLog>();
+        public DbSet<AnalyticsLog> AnalyticsLogs => Set<AnalyticsLog>();
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+
+            // Enterprise Primary Key Configuration
+            modelBuilder.Entity<ApplicationOwnership>().HasKey(a => a.Application_ID);
+            modelBuilder.Entity<RoleMaster>().HasKey(r => r.Role_ID);
+            modelBuilder.Entity<UserRoleEntity>().HasKey(u => u.User_Role_ID);
+            modelBuilder.Entity<PermissionMaster>().HasKey(p => p.Permission_ID);
+            modelBuilder.Entity<SecurityAuditLog>().HasKey(s => s.Audit_ID);
+            modelBuilder.Entity<LoginSessionLog>().HasKey(l => l.Session_ID);
+            modelBuilder.Entity<ErrorLog>().HasKey(e => e.Error_ID);
+            modelBuilder.Entity<OfficeMaster>().HasKey(o => o.Office_ID);
+            modelBuilder.Entity<WorkModeMaster>().HasKey(w => w.Mode_ID);
+            modelBuilder.Entity<RetentionConfig>().HasKey(r => r.Config_ID);
+            modelBuilder.Entity<BackupLog>().HasKey(b => b.Backup_ID);
+            modelBuilder.Entity<ApiAccessLog>().HasKey(a => a.Access_ID);
+            modelBuilder.Entity<IntegrationConfig>().HasKey(i => i.Integration_ID);
+            modelBuilder.Entity<DeviceMaster>().HasKey(d => d.Device_ID);
+            modelBuilder.Entity<AttendanceRiskLog>().HasKey(a => a.Risk_ID);
+            modelBuilder.Entity<AnalyticsLog>().HasKey(a => a.Prediction_ID);
 
             // Employee self-referencing relationship for Org Chart hierarchy
             modelBuilder.Entity<Employee>()

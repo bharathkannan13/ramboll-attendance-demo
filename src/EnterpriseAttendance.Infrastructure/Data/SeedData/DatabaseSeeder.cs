@@ -240,6 +240,147 @@ namespace EnterpriseAttendance.Infrastructure.Data.SeedData
             }
 
             await context.SaveChangesAsync();
+
+            // =====================================================================
+            // SEED ALL 18 ENTERPRISE SPECIFICATION TABLES
+            // =====================================================================
+
+            // 1. Application_Ownership
+            if (!await context.ApplicationOwnerships.AnyAsync())
+            {
+                await context.ApplicationOwnerships.AddAsync(new ApplicationOwnership
+                {
+                    Application_Name = "Bkran Group Connect Attendance Portal",
+                    Business_Owner = "Human Resources (HR)",
+                    Technical_Owner = "Cyber Security & Infrastructure",
+                    Support_Group = "Global Enterprise IT Support",
+                    Escalation_Email = "escalations-attendance@bkrangroup.com"
+                });
+            }
+
+            // 2. Role_Master
+            if (!await context.RoleMasters.AnyAsync())
+            {
+                await context.RoleMasters.AddRangeAsync(
+                    new RoleMaster { Role_Name = "Admin", Description = "Full Enterprise System Administrator Access" },
+                    new RoleMaster { Role_Name = "HR", Description = "Human Resources Global Attendance & Policy Manager" },
+                    new RoleMaster { Role_Name = "Manager", Description = "People Manager Reporting Tree Access" },
+                    new RoleMaster { Role_Name = "Employee", Description = "Individual Contributor Self-Service Access" },
+                    new RoleMaster { Role_Name = "Security Analyst", Description = "Cybersecurity Threat & Anomaly Monitoring" }
+                );
+            }
+
+            // 3. Office_Master (Support Chennai, Bangalore, Mumbai, Pune, Delhi, Noida, Hyderabad, Gurugram)
+            if (!await context.OfficeMasters.AnyAsync())
+            {
+                await context.OfficeMasters.AddRangeAsync(
+                    new OfficeMaster { Office_Name = "Chennai Campus", City = "Chennai", Country = "India", Timezone = "IST" },
+                    new OfficeMaster { Office_Name = "Bangalore Innovation Center", City = "Bangalore", Country = "India", Timezone = "IST" },
+                    new OfficeMaster { Office_Name = "Mumbai Corporate Tower", City = "Mumbai", Country = "India", Timezone = "IST" },
+                    new OfficeMaster { Office_Name = "Pune Tech Hub", City = "Pune", Country = "India", Timezone = "IST" },
+                    new OfficeMaster { Office_Name = "Delhi Executive Office", City = "Delhi", Country = "India", Timezone = "IST" },
+                    new OfficeMaster { Office_Name = "Noida Tech Park", City = "Noida", Country = "India", Timezone = "IST" },
+                    new OfficeMaster { Office_Name = "Hyderabad Hub", City = "Hyderabad", Country = "India", Timezone = "IST" },
+                    new OfficeMaster { Office_Name = "Gurugram CyberCity", City = "Gurugram", Country = "India", Timezone = "IST" }
+                );
+            }
+
+            // 4. Work_Mode_Master (Office, WFH, Client Site, Travel)
+            if (!await context.WorkModeMasters.AnyAsync())
+            {
+                await context.WorkModeMasters.AddRangeAsync(
+                    new WorkModeMaster { Mode_Name = "Office", Description = "Physical presence at corporate branch office" },
+                    new WorkModeMaster { Mode_Name = "WFH", Description = "Authorized Remote / Work From Home network" },
+                    new WorkModeMaster { Mode_Name = "Client Site", Description = "Authorized client site location deployment" },
+                    new WorkModeMaster { Mode_Name = "Travel", Description = "Official corporate business travel" }
+                );
+            }
+
+            // 5. Retention_Config (Attendance=2555 days, Audit=3650 days, Error Logs=365 days)
+            if (!await context.RetentionConfigs.AnyAsync())
+            {
+                await context.RetentionConfigs.AddRangeAsync(
+                    new RetentionConfig { Table_Name = "Attendance_Log", Retention_Days = 2555, Archive_Flag = true },
+                    new RetentionConfig { Table_Name = "Security_Audit_Log", Retention_Days = 3650, Archive_Flag = true },
+                    new RetentionConfig { Table_Name = "Error_Log", Retention_Days = 365, Archive_Flag = false }
+                );
+            }
+
+            // 6. Backup_Log
+            if (!await context.BackupLogs.AnyAsync())
+            {
+                await context.BackupLogs.AddRangeAsync(
+                    new BackupLog { Backup_Type = "Daily", Backup_Status = "COMPLETED", Backup_Location = "Azure Primary Storage Vault" },
+                    new BackupLog { Backup_Type = "Weekly", Backup_Status = "COMPLETED", Backup_Location = "Azure Secondary Geo-Redundant Storage" }
+                );
+            }
+
+            // 7. Integration_Config (Entra ID, Workday, Cisco ISE, Intune, Active Directory)
+            if (!await context.IntegrationConfigs.AnyAsync())
+            {
+                await context.IntegrationConfigs.AddRangeAsync(
+                    new IntegrationConfig { System_Name = "Microsoft Entra ID", Endpoint_URL = "https://graph.microsoft.com/v1.0/users", Status = "CONNECTED" },
+                    new IntegrationConfig { System_Name = "Microsoft Intune", Endpoint_URL = "https://graph.microsoft.com/v1.0/deviceManagement", Status = "CONNECTED" },
+                    new IntegrationConfig { System_Name = "Cisco ISE", Endpoint_URL = "https://ise.bkrangroup.com/api/v1/sessions", Status = "ACTIVE" },
+                    new IntegrationConfig { System_Name = "Workday HCM", Endpoint_URL = "https://wd3.workday.com/bkrangroup/api", Status = "SYNCED" },
+                    new IntegrationConfig { System_Name = "Active Directory", Endpoint_URL = "ldaps://ad.bkrangroup.com:636", Status = "ACTIVE" }
+                );
+            }
+
+            // 8. Security_Audit_Log
+            if (!await context.SecurityAuditLogs.AnyAsync())
+            {
+                await context.SecurityAuditLogs.AddRangeAsync(
+                    new SecurityAuditLog { Employee_ID = 1, Employee_Name = "Rajesh Sharma", Action_Type = "Login", IP_Address = "10.100.12.45", Device_Name = "BK-LAP-001", Result = "SUCCESS", Remarks = "SSO Authentication Passed" },
+                    new SecurityAuditLog { Employee_ID = 4, Employee_Name = "Bharath Kannan", Action_Type = "Report Export", IP_Address = "10.100.14.88", Device_Name = "BK-LAP-099", Result = "SUCCESS", Remarks = "Exported Weekly Excel Summary" }
+                );
+            }
+
+            // 9. Login_Session_Log
+            if (!await context.LoginSessionLogs.AnyAsync())
+            {
+                await context.LoginSessionLogs.AddAsync(new LoginSessionLog
+                {
+                    Employee_ID = 4,
+                    IP_Address = "10.100.14.88",
+                    Browser = "Chrome 122.0 / Windows 11",
+                    Device_Name = "BK-LAP-099",
+                    Session_Status = "ACTIVE"
+                });
+            }
+
+            // 10. Error_Log
+            if (!await context.ErrorLogs.AnyAsync())
+            {
+                await context.ErrorLogs.AddAsync(new ErrorLog
+                {
+                    Error_Source = "TelemetryEngine",
+                    Error_Message = "Minor transient network jitter resolved automatically",
+                    Stack_Trace = "None",
+                    Severity = "Low",
+                    Status = "RESOLVED"
+                });
+            }
+
+            // 11. Attendance_Risk_Log (Cybersecurity Threat Features)
+            if (!await context.AttendanceRiskLogs.AnyAsync())
+            {
+                await context.AttendanceRiskLogs.AddRangeAsync(
+                    new AttendanceRiskLog { Employee_ID = 5, Employee_Name = "Anand Kumar", Risk_Type = "Multiple Devices", Risk_Score = 35, Status = "RESOLVED" },
+                    new AttendanceRiskLog { Employee_ID = 8, Employee_Name = "Vikram Seth", Risk_Type = "Suspicious Network Pattern", Risk_Score = 40, Status = "INVESTIGATING" }
+                );
+            }
+
+            // 12. Analytics_Log (AI Predictions)
+            if (!await context.AnalyticsLogs.AnyAsync())
+            {
+                await context.AnalyticsLogs.AddRangeAsync(
+                    new AnalyticsLog { Prediction_Type = "Attendance Trend", Prediction_Value = "Projected 89.2% Office Occupancy for Next Week" },
+                    new AnalyticsLog { Prediction_Type = "Peak Login Hours", Prediction_Value = "Peak Network Arrival Window: 09:15 AM - 09:45 AM IST" }
+                );
+            }
+
+            await context.SaveChangesAsync();
         }
     }
 }

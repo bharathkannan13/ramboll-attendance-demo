@@ -47,10 +47,12 @@ namespace EnterpriseAttendance.Web.Controllers
         {
             if (logout)
             {
-                await HttpContext.SignOutAsync("DemoCookies");
-                await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+                try { await HttpContext.SignOutAsync("DemoCookies"); } catch { }
+                try { await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme); } catch { }
+                
                 Response.Cookies.Delete(".AspNetCore.DemoCookies");
                 Response.Cookies.Delete(".AspNetCore.Cookies");
+                Response.Cookies.Delete("DemoCookies");
             }
 
             ViewBag.UseMockTelemetry = _config.GetValue<bool>("TelemetrySettings:UseMockTelemetry", true);
@@ -61,10 +63,17 @@ namespace EnterpriseAttendance.Web.Controllers
         [HttpPost("/Auth/Logout")]
         public async Task<IActionResult> Logout()
         {
-            await HttpContext.SignOutAsync("DemoCookies");
-            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
-            Response.Cookies.Delete(".AspNetCore.DemoCookies");
-            Response.Cookies.Delete(".AspNetCore.Cookies");
+            try { await HttpContext.SignOutAsync("DemoCookies"); } catch { }
+            try { await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme); } catch { }
+
+            try
+            {
+                Response.Cookies.Delete(".AspNetCore.DemoCookies");
+                Response.Cookies.Delete(".AspNetCore.Cookies");
+                Response.Cookies.Delete("DemoCookies");
+            }
+            catch { }
+
             return Redirect("/Auth/Login?logout=true");
         }
 

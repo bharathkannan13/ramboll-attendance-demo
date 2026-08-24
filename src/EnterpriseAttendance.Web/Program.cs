@@ -82,8 +82,18 @@ if (!useMockTelemetry)
 else
 {
     // DEMO MODE: Cookie-based auth with manual role switching (no Azure needed)
-    builder.Services.AddAuthentication("DemoCookies")
+    builder.Services.AddAuthentication(options =>
+        {
+            options.DefaultScheme = "DemoCookies";
+            options.DefaultChallengeScheme = "DemoCookies";
+        })
         .AddCookie("DemoCookies", options =>
+        {
+            options.LoginPath = "/Auth/Login";
+            options.AccessDeniedPath = "/Auth/Login";
+            options.ExpireTimeSpan = TimeSpan.FromHours(8);
+        })
+        .AddCookie(Microsoft.AspNetCore.Authentication.Cookies.CookieAuthenticationDefaults.AuthenticationScheme, options =>
         {
             options.LoginPath = "/Auth/Login";
             options.AccessDeniedPath = "/Auth/Login";

@@ -117,8 +117,14 @@ namespace EnterpriseAttendance.Web.Controllers
         [HttpPost("api-logout")]
         public async Task<IActionResult> LogoutApi()
         {
-            await HttpContext.SignOutAsync("DemoCookies");
-            await HttpContext.SignOutAsync(Microsoft.AspNetCore.Authentication.Cookies.CookieAuthenticationDefaults.AuthenticationScheme);
+            try { await HttpContext.SignOutAsync("DemoCookies"); } catch { }
+            try { await HttpContext.SignOutAsync(Microsoft.AspNetCore.Authentication.Cookies.CookieAuthenticationDefaults.AuthenticationScheme); } catch { }
+            try
+            {
+                Response.Cookies.Delete(".AspNetCore.DemoCookies");
+                Response.Cookies.Delete(".AspNetCore.Cookies");
+            }
+            catch { }
             return Ok(new { success = true, redirectUrl = "/Auth/Login?logout=true" });
         }
 

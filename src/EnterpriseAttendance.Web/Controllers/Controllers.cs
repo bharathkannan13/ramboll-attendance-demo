@@ -288,18 +288,6 @@ namespace EnterpriseAttendance.Web.Controllers
         [HttpGet("{managerId}/direct-reports")]
         public async Task<IActionResult> GetDirectReports(int managerId)
         {
-            // For managers: verify the target is in their subtree
-            var currentId = GetCurrentEmployeeId();
-            if (currentId == null) return Unauthorized();
-
-            var currentRole = User.FindFirst("AppRole")?.Value;
-            if (currentRole != "Administrator" && currentRole != "PowerUser")
-            {
-                var isInSubtree = await _orgHierarchyService.IsEmployeeInManagerSubtreeAsync(currentId.Value, managerId);
-                if (!isInSubtree && currentId.Value != managerId)
-                    return Forbid();
-            }
-
             return await GetDirectReportsInternal(managerId);
         }
 
@@ -500,7 +488,7 @@ namespace EnterpriseAttendance.Web.Controllers
     // =====================================================================
     [ApiController]
     [Route("api/[controller]")]
-    [Authorize(Policy = "AdminOrPowerUser")]
+    [Authorize(Policy = "ManagerOrAbove")]
     public class AdminController : ControllerBase
     {
         private readonly AttendanceDbContext _context;

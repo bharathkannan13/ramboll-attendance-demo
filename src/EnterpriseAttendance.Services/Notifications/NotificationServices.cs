@@ -226,6 +226,13 @@ namespace EnterpriseAttendance.Services.Notifications
 
             bool liveMailSent = false;
             string deliveryStatus = "PreviewInbox";
+            string recipientEmail = _config["Smtp:TestRecipientEmail"];
+            if (string.IsNullOrWhiteSpace(recipientEmail))
+            {
+                recipientEmail = manager.Email.Contains("@bkrangroup.com", StringComparison.OrdinalIgnoreCase) 
+                    ? "bharathkannan1154@gmail.com" 
+                    : manager.Email;
+            }
 
             // Attempt Live SMTP Dispatch if SMTP Host is configured in appsettings.json
             try
@@ -240,7 +247,7 @@ namespace EnterpriseAttendance.Services.Notifications
 
                     using var mailMsg = new System.Net.Mail.MailMessage();
                     mailMsg.From = new System.Net.Mail.MailAddress(smtpFrom, "Bkran Group Connect");
-                    mailMsg.To.Add(manager.Email);
+                    mailMsg.To.Add(recipientEmail);
                     mailMsg.Subject = $"Bkran Group Connect — Direct Reports Weekly Attendance ({monday:MMM dd} – {friday:MMM dd})";
                     mailMsg.Body = sb.ToString();
                     mailMsg.IsBodyHtml = true;
@@ -257,19 +264,19 @@ namespace EnterpriseAttendance.Services.Notifications
                         client.EnableSsl = true;
                     }
                     await client.SendMailAsync(mailMsg);
-                    deliveryStatus = "SentLiveSMTP";
+                    deliveryStatus = $"SentLiveSMTP to {recipientEmail}";
                 }
             }
             catch (Exception ex)
             {
                 System.Diagnostics.Debug.WriteLine($"SMTP Dispatch Error: {ex.Message}");
-                deliveryStatus = "PreviewInbox (SMTP Offline)";
+                deliveryStatus = $"PreviewInbox for {recipientEmail} (SMTP Offline)";
             }
 
             var log = new EmailNotificationLog
             {
                 RecipientEmployeeId = managerId,
-                RecipientEmail = manager.Email,
+                RecipientEmail = recipientEmail,
                 NotificationType = "WeeklyManagerReport",
                 Subject = $"Bkran Group Connect — Direct Reports Weekly Attendance ({monday:MMM dd} – {friday:MMM dd})",
                 BodyHtml = sb.ToString(),

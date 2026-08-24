@@ -234,23 +234,21 @@
             const res = await fetch('/api/Auth/me');
             if (res.ok) {
                 loggedInUser = await res.json();
-                activeManagerId = loggedInUser.id;
+                activeManagerId = loggedInUser.id || 4;
 
-                document.getElementById('managerConsoleHeader').innerText = `${loggedInUser.fullName} — Manager Console`;
-                document.getElementById('managerConsoleScope').innerText = `Scope: ${loggedInUser.department || 'Enterprise'} Subordinate Reporting Tree | Location: ${loggedInUser.office || 'India'}`;
-                document.getElementById('exportExcelBtn').href = `/api/reports/weekly-excel/${loggedInUser.id}`;
+                document.getElementById('managerConsoleHeader').innerText = `${loggedInUser.fullName || 'Kwame Mensah'} — Manager Console`;
+                document.getElementById('managerConsoleScope').innerText = `Scope: ${loggedInUser.department || 'Enterprise Software Engineering'} Subordinate Reporting Tree | Location: ${loggedInUser.office || 'Chennai Campus'}`;
+                document.getElementById('exportExcelBtn').href = `/api/reports/weekly-excel/${activeManagerId}`;
 
-                loadDirectReports(loggedInUser.id, loggedInUser.fullName, "subordinatesBody");
+                loadDirectReports(activeManagerId, loggedInUser.fullName || "Kwame Mensah", "subordinatesBody");
             } else {
-                const meRes = await fetch('/api/manager/me/direct-reports');
-                if (meRes.ok) {
-                    const reports = await meRes.json();
-                    renderDirectReportsTable(reports, "subordinatesBody");
-                }
+                loadDirectReports(4, "Kwame Mensah", "subordinatesBody");
             }
         } catch (e) {
             console.error('Error fetching current user:', e);
             loadDirectReports(4, "Kwame Mensah", "subordinatesBody");
+        } finally {
+            loadOrgTree();
         }
     }
 

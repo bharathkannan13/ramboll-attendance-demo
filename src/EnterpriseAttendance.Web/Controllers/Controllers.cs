@@ -704,6 +704,38 @@ namespace EnterpriseAttendance.Web.Controllers
         }
 
         /// <summary>
+        /// Feature 5: Get Interactive Business Rules Configuration
+        /// </summary>
+        [HttpGet("business-rules")]
+        public async Task<IActionResult> GetBusinessRules()
+        {
+            var rules = await _context.BusinessRules.Where(r => r.IsActive).ToListAsync();
+            return Ok(rules);
+        }
+
+        /// <summary>
+        /// Feature 5: Update Business Rule Value dynamically
+        /// </summary>
+        [HttpPost("business-rules")]
+        public async Task<IActionResult> UpdateBusinessRule([FromBody] BusinessRuleUpdateRequest request)
+        {
+            var rule = await _context.BusinessRules.FirstOrDefaultAsync(r => r.RuleKey == request.RuleKey);
+            if (rule == null)
+            {
+                rule = new BusinessRule { RuleName = request.RuleKey, RuleKey = request.RuleKey, RuleValue = request.RuleValue, Description = "Dynamic Policy Rule" };
+                await _context.BusinessRules.AddAsync(rule);
+            }
+            else
+            {
+                rule.RuleValue = request.RuleValue;
+                rule.UpdatedAt = DateTime.UtcNow;
+            }
+
+            await _context.SaveChangesAsync();
+            return Ok(new { success = true, message = $"Policy rule '{request.RuleKey}' updated to '{request.RuleValue}' successfully." });
+        }
+
+        /// <summary>
         /// Feature 1: Branch Occupancy & Capacity Utilization Heatmap Data for India Offices
         /// </summary>
         [HttpGet("branch-occupancy")]
@@ -956,5 +988,11 @@ namespace EnterpriseAttendance.Web.Controllers
                 </html>";
             return Content(html, "text/html");
         }
+    }
+
+    public class BusinessRuleUpdateRequest
+    {
+        public string RuleKey { get; set; } = string.Empty;
+        public string RuleValue { get; set; } = string.Empty;
     }
 }

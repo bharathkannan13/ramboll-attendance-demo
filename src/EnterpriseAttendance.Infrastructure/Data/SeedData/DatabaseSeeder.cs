@@ -258,6 +258,17 @@ namespace EnterpriseAttendance.Infrastructure.Data.SeedData
                 });
             }
 
+            // Seed Business Rules
+            if (!await context.BusinessRules.AnyAsync())
+            {
+                await context.BusinessRules.AddRangeAsync(
+                    new BusinessRule { RuleName = "Target Office Days Per Week", RuleKey = "TargetOfficeDaysPerWeek", RuleValue = "3", DataType = "System.Int32", Description = "Mandatory physical office days per week" },
+                    new BusinessRule { RuleName = "Session Grace Period (Minutes)", RuleKey = "GracePeriodMinutes", RuleValue = "30", DataType = "System.Int32", Description = "Reconnection window grace period for active working sessions" },
+                    new BusinessRule { RuleName = "Require Compliant Device", RuleKey = "RequireCompliantDevice", RuleValue = "true", DataType = "System.Boolean", Description = "Only count telemetry from Intune compliant managed laptops" },
+                    new BusinessRule { RuleName = "Standard Workweek Days", RuleKey = "StandardWorkweekDays", RuleValue = "Mon,Tue,Wed,Thu,Fri", DataType = "System.String", Description = "Working days focused for attendance calculation" }
+                );
+            }
+
             // 2. Role_Master
             if (!await context.RoleMasters.AnyAsync())
             {

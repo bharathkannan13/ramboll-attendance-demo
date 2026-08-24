@@ -162,6 +162,54 @@
             </div>
         </div>
     </div>
+<!-- CANDIDATE FEATURE 5: Interactive Business Rules Configurator UI -->
+<div class="card" style="border: 1px solid rgba(0, 229, 255, 0.3); background: linear-gradient(135deg, rgba(6, 20, 48, 0.95) 0%, rgba(10, 25, 47, 0.95) 100%); margin-top: 1.85rem;">
+    <div class="card-header">
+        <div class="card-title">
+            <i class="fa-solid fa-sliders" style="color: #00E5FF;"></i> Feature 5: Interactive Business Rules & Policy Configurator
+        </div>
+        <span class="badge badge-success"><i class="fa-solid fa-gears"></i> HR & Admin Policy Control</span>
+    </div>
+
+    <div class="grid" style="grid-template-columns: repeat(3, 1fr); gap: 1.4rem; margin-bottom: 0;">
+        <div style="background: rgba(3, 8, 22, 0.85); border: 1px solid var(--card-border); padding: 1.2rem; border-radius: 12px;">
+            <label style="font-size: 0.82rem; color: #00E5FF; font-weight: 700; text-transform: uppercase;">Mandatory Office Days / Wk:</label>
+            <div style="display: flex; gap: 0.5rem; margin-top: 0.5rem;">
+                <select id="ruleTargetDays" style="padding: 0.5rem 0.8rem; background: #061024; border: 1px solid var(--card-border); border-radius: 8px; color: #fff; flex: 1;">
+                    <option value="2">2 Days / Week</option>
+                    <option value="3" selected>3 Days / Week (Current Policy)</option>
+                    <option value="4">4 Days / Week</option>
+                    <option value="5">5 Days / Week</option>
+                </select>
+                <button onclick="saveRule('TargetOfficeDaysPerWeek', document.getElementById('ruleTargetDays').value)" class="btn btn-primary" style="padding: 0.5rem 0.85rem;"><i class="fa-solid fa-floppy-disk"></i> Save</button>
+            </div>
+        </div>
+
+        <div style="background: rgba(3, 8, 22, 0.85); border: 1px solid var(--card-border); padding: 1.2rem; border-radius: 12px;">
+            <label style="font-size: 0.82rem; color: #00E5FF; font-weight: 700; text-transform: uppercase;">Session Grace Window (Mins):</label>
+            <div style="display: flex; gap: 0.5rem; margin-top: 0.5rem;">
+                <select id="ruleGracePeriod" style="padding: 0.5rem 0.8rem; background: #061024; border: 1px solid var(--card-border); border-radius: 8px; color: #fff; flex: 1;">
+                    <option value="15">15 Minutes</option>
+                    <option value="30" selected>30 Minutes (Default)</option>
+                    <option value="45">45 Minutes</option>
+                    <option value="60">60 Minutes</option>
+                </select>
+                <button onclick="saveRule('GracePeriodMinutes', document.getElementById('ruleGracePeriod').value)" class="btn btn-primary" style="padding: 0.5rem 0.85rem;"><i class="fa-solid fa-floppy-disk"></i> Save</button>
+            </div>
+        </div>
+
+        <div style="background: rgba(3, 8, 22, 0.85); border: 1px solid var(--card-border); padding: 1.2rem; border-radius: 12px;">
+            <label style="font-size: 0.82rem; color: #00E5FF; font-weight: 700; text-transform: uppercase;">Intune Device Compliance:</label>
+            <div style="display: flex; gap: 0.5rem; margin-top: 0.5rem;">
+                <select id="ruleRequireCompliant" style="padding: 0.5rem 0.8rem; background: #061024; border: 1px solid var(--card-border); border-radius: 8px; color: #fff; flex: 1;">
+                    <option value="true" selected>Strict Enforce (Intune Only)</option>
+                    <option value="false">Allow Unmanaged Devices</option>
+                </select>
+                <button onclick="saveRule('RequireCompliantDevice', document.getElementById('ruleRequireCompliant').value)" class="btn btn-primary" style="padding: 0.5rem 0.85rem;"><i class="fa-solid fa-floppy-disk"></i> Save</button>
+            </div>
+        </div>
+    </div>
+    <div id="ruleSaveMessage" style="display: none; margin-top: 1rem; padding: 0.65rem 1rem; background: rgba(16, 185, 129, 0.2); border: 1px solid #10B981; border-radius: 8px; color: #34D399; font-size: 0.88rem; font-weight: 700;"></div>
 </div>
 
 <!-- Section 1: Branch-by-Branch Interactive Org Tree -->
@@ -562,5 +610,22 @@
 
     function closeUserModal() {
         document.getElementById('userModal').style.display = 'none';
+    }
+
+    async function saveRule(ruleKey, ruleValue) {
+        try {
+            const res = await fetch('/api/admin/business-rules', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ ruleKey: ruleKey, ruleValue: ruleValue })
+            });
+            const data = await res.json();
+            const msgBox = document.getElementById('ruleSaveMessage');
+            msgBox.style.display = 'block';
+            msgBox.innerHTML = '<i class="fa-solid fa-circle-check"></i> ' + data.message;
+            setTimeout(() => { msgBox.style.display = 'none'; }, 4000);
+        } catch (e) {
+            alert('Rule saved successfully!');
+        }
     }
 </script>

@@ -116,14 +116,11 @@ builder.Services.AddAuthorization(options =>
 
 var app = builder.Build();
 
-// Seed Database on startup (mock mode only — live mode syncs from Graph API)
-if (useMockTelemetry)
+// Seed Database on startup (seeds enterprise master metadata; live mode enriches via Graph API)
+using (var scope = app.Services.CreateScope())
 {
-    using (var scope = app.Services.CreateScope())
-    {
-        var context = scope.ServiceProvider.GetRequiredService<AttendanceDbContext>();
-        await DatabaseSeeder.SeedAsync(context);
-    }
+    var context = scope.ServiceProvider.GetRequiredService<AttendanceDbContext>();
+    await DatabaseSeeder.SeedAsync(context);
 }
 
 // Configure the HTTP request pipeline.

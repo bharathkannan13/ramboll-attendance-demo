@@ -2,40 +2,26 @@
 
 > **Document ID**: STAGE-04-EMAIL-ROLLOUT-2026  
 > **System Name**: Bkran Group Connect (Enterprise Attendance Analytics Platform)  
-> **Target Scope**: Tool Locations, Background Scheduling, Attachment Generation, & Redirection Config
+> **Target Scope**: Exact Click-by-Click Portal Actions for Shared Mailbox & Entra ID Mail.Send Permissions
 
 ---
 
-## 📌 Executive Summary & Tool Locations
+## 🖱️ PART A: Exact Clicks in Microsoft 365 Admin Center (`admin.microsoft.com`)
 
-| Component / Feature | Exact Configuration Tool | Configuration Parameter / Code File | What It Does |
-|---|---|---|---|
-| **1. Sender Account** | Azure Portal & `appsettings.json` | `"MailSettings:SenderEmail": "attendance-response@ramboll.com"` | Specifies the corporate shared mailbox address. |
-| **2. Live Domain URL** | Azure Portal & `appsettings.json` | `"MailSettings:LiveDomainUrl": "https://ramboll-attendance-portal.azurewebsites.net"` | Specifies the redirection URL embedded in email buttons. |
-| **3. Schedule (Mon 9 AM)** | C# Backend Code | `WeeklyManagerEmailBackgroundService.cs` | Runs a background timer every Monday at 09:00 AM IST automatically. |
-| **4. Recipient Filter** | C# Backend Code | `OrgHierarchyService.GetActiveManagersAsync()` | Queries SQL database for all active people managers. |
-| **5. Excel Attachment** | C# Backend Code | `NotificationServices.GenerateWeeklyExcelAttachment()` | Generates `Weekly_Attendance_Report.xlsx` in memory. |
-| **6. Email Redirection Link** | HTML Template & C# Code | `NotificationServices.cs` | Creates the `<a href="https://.../Manager">` button in email body. |
+1. Open **[admin.microsoft.com](https://admin.microsoft.com)** & sign in as Global Admin.
+2. In left menu: **Teams & groups** &rarr; **Shared mailboxes**.
+3. Click **+ Add a shared mailbox** button at the top.
+4. Name: `Bkran Attendance System` | Email: `attendance-response` | Domain: `@ramboll.com`.
+5. Click **Save changes** at the bottom.
 
 ---
 
-## ⚙️ Step-by-Step Configuration Steps in Each Tool
+## 🖱️ PART B: Exact Clicks in Azure Entra ID Portal (`entra.microsoft.com`)
 
-### STEP A: Configure Settings in `appsettings.json` (or Azure Portal)
-
-```json
-{
-  "MailSettings": {
-    "Provider": "MicrosoftGraph",
-    "SenderEmail": "attendance-response@ramboll.com",
-    "SenderDisplayName": "Bkran Group Connect Attendance System",
-    "LiveDomainUrl": "https://ramboll-attendance-portal.azurewebsites.net",
-    "EnableWeeklyManagerReport": true,
-    "WeeklyReportDay": "Monday",
-    "WeeklyReportTime": "09:00"
-  }
-}
-```
-
-### STEP B: C# Background Service (`WeeklyManagerEmailBackgroundService.cs`)
-You **do not need external cron tools**. The C# Hosted Background Service runs continuously inside your Azure App Service, querying managers, generating `Weekly_Attendance_Report.xlsx`, embedding the live domain link, and dispatching via Graph API `Mail.Send` every Monday at 09:00 AM IST.
+1. Open **[entra.microsoft.com](https://entra.microsoft.com)**.
+2. Left menu: **Applications** &rarr; **App registrations** &rarr; Select `Bkran-Attendance-Engine`.
+3. Left menu: **API permissions** &rarr; Click **+ Add a permission**.
+4. Select **Microsoft Graph** &rarr; Select **Application permissions**.
+5. Search `Mail.Send` &rarr; Check **`Mail.Send`** &rarr; Click **Add permissions**.
+6. Click **Grant admin consent for Ramboll** &rarr; Click **Yes** on confirmation pop-up.
+7. Verify status column turns **Green Checkmark** saying *"Granted for Ramboll"*.

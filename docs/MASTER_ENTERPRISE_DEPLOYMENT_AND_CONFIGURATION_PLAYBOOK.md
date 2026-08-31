@@ -1,22 +1,24 @@
-# Master Pre-Pilot Deployment & Configuration Playbook (1 Manager + 4 Direct Reports)
+# Master Pre-Pilot Deployment Playbook (Dynamic Single Manager Input)
 
-> **Document ID**: PLAYBOOK-2026-PREPILOT-OPTIMIZED  
+> **Document ID**: PLAYBOOK-2026-DYNAMIC-SINGLE-MANAGER  
 > **System Name**: Bkran Group Connect (Enterprise Attendance Analytics Platform)  
-> **Pre-Pilot Scope**: **1 Organization Unit | 1 Manager | 4 Direct Reporting Employees (5 Users Total)**  
-> **Primary Pilot Manager**: `bharathkannan1154@gmail.com`
+> **Pre-Pilot Horizon**: **Dynamic Single Manager Email Input & Automatic Subordinate Discovery**  
+> **Input Rule**: **Provide ONLY 1 Manager Email (e.g., `manager.name@ramboll.com`)**
 
 ---
 
-## 📌 Executive Summary of Pre-Pilot Testing Scope
+## 📌 Executive Overview: Dynamic Subordinate Discovery
 
-- **Test Audience**: 1 Manager + 4 Direct Reporting Staff (5 test laptops total).
-- **Goal**: Validate First Seen / Last Seen precision, Office Wi-Fi vs WFH flagging, and automated email dispatches with attached Excel spreadsheets before full corporate rollout.
+Simply provide **ONE Manager Email** in the configuration (`"PrePilotManagerEmail": "your.manager@ramboll.com"`). The application automatically:
+1. Queries Microsoft Graph API (`GET /users/{id}/directReports`) to discover all reporting staff under that manager.
+2. Ingests Intune & Defender laptop telemetry exclusively for that manager's team.
+3. Generates the customized `Weekly_Attendance_Report.xlsx` for that manager's subordinates.
+4. Sends the weekly automated email dispatch to that manager's inbox with the Excel report attached and the live SSO redirection button.
+5. Authenticates that manager via Entra ID Single Sign-On (SSO) and displays their exact team Org Chart tree in the Manager Console.
 
 ---
 
-## 💻 PHASE 1: GitHub Transfer & Laptop Zero-Code Setup
-
-Open `src/EnterpriseAttendance.Web/appsettings.json` on your laptop & replace completely with:
+## 💻 Zero-Code Copy-Paste Template (`appsettings.json`)
 
 ```json
 {
@@ -31,7 +33,7 @@ Open `src/EnterpriseAttendance.Web/appsettings.json` on your laptop & replace co
   "TelemetrySettings": {
     "UseMockTelemetry": false,
     "PrePilotModeOnly": true,
-    "PrePilotManagerEmail": "bharathkannan1154@gmail.com",
+    "PrePilotManagerEmail": "[PASTE_ANY_MANAGER_EMAIL_HERE]",
     "IndiaRegionalFilterOnly": true,
     "SyncIntervalMinutes": 15
   },
@@ -49,7 +51,7 @@ Open `src/EnterpriseAttendance.Web/appsettings.json` on your laptop & replace co
     "SenderDisplayName": "Bkran Group Connect Attendance System",
     "LiveDomainUrl": "https://ramboll-attendance-portal.azurewebsites.net",
     "EnableWeeklyManagerReport": true,
-    "TestRecipientEmail": "bharathkannan1154@gmail.com"
+    "TestRecipientEmail": "[PASTE_ANY_MANAGER_EMAIL_HERE]"
   },
 
   "ConnectionStrings": {
@@ -60,47 +62,23 @@ Open `src/EnterpriseAttendance.Web/appsettings.json` on your laptop & replace co
 
 ---
 
-## 🔑 PHASE 2: Entra ID SSO & App Registration Setup
-
-1. In **[entra.microsoft.com](https://entra.microsoft.com)** &rarr; Register `Bkran-Attendance-Engine-PrePilot`.
-2. Copy `Application (client) ID` and `Directory (tenant) ID`.
-3. Create Client Secret & copy Secret Value.
-4. Under *Authentication*, add Web Redirect URI `https://ramboll-attendance-portal.azurewebsites.net/signin-oidc` & check **ID tokens**.
-
----
-
-## 🔒 PHASE 3: Microsoft Graph API Permissions Setup
-
-1. Under *API permissions*, add Application Permissions: `User.Read.All`, `DeviceManagementManagedDevices.Read.All`, `SecurityEvents.Read.All`, `Mail.Send`.
-2. Click **Grant admin consent for Ramboll**.
-
----
-
-## 📧 PHASE 4: Pre-Pilot Automated Mail Service Configuration
-
-1. In **[admin.microsoft.com](https://admin.microsoft.com)** &rarr; Create shared mailbox `attendance-response@ramboll.com`.
-2. Every Monday 09:00 AM IST, dispatches email to Manager (`bharathkannan1154@gmail.com`) with attached `Weekly_Attendance_Report.xlsx` containing the 4 direct reports and a single-click redirection link to `https://ramboll-attendance-portal.azurewebsites.net/Manager`.
-
----
-
-## ☁️ PHASE 5: Azure App Service & SQL Cloud Setup
+## ☁️ Azure Portal Environment Variables (`portal.azure.com`)
 
 In Azure Portal &rarr; App Service `ramboll-attendance-portal` &rarr; *Environment variables*, add:
 - `TelemetrySettings__UseMockTelemetry` = `false`
 - `TelemetrySettings__PrePilotModeOnly` = `true`
-- `TelemetrySettings__PrePilotManagerEmail` = `bharathkannan1154@gmail.com`
-- `AzureAd__TenantId` = `[YOUR_TENANT_ID]`
+- `TelemetrySettings__PrePilotManagerEmail` = `[PASTE_ANY_MANAGER_EMAIL_HERE]`
+- `AzureAd__TenantId` = `[YOUR_AZURE_TENANT_ID]`
 - `AzureAd__ClientId` = `[YOUR_CLIENT_ID]`
 - `AzureAd__ClientSecret` = `[YOUR_CLIENT_SECRET]`
 - `ConnectionStrings__DefaultConnection` = `[YOUR_AZURE_SQL_CONNECTION_STRING]`
 
 ---
 
-## 🧪 PHASE 6: The 4 Pre-Pilot Checkpoints & Production Promotion
+## 🚀 One-Click Promotion to Full Production
 
-- **Check 1**: First Seen / Last Seen timestamp precision.
-- **Check 2**: Office Wi-Fi (`10.100.0.0/16`) vs WFH flagging.
-- **Check 3**: Automated Monday email dispatch to Manager (`bharathkannan1154@gmail.com`) with 4-person Excel report.
-- **Check 4**: Hyperlink redirection button to `https://ramboll-attendance-portal.azurewebsites.net/Manager`.
-
-**Production Promotion**: Change `TelemetrySettings__PrePilotModeOnly` to `false` in Azure Portal to expand from 5 pre-pilot users to all employees!
+Once you verify the email report and dashboard for your test manager:
+1. Open Azure Portal &rarr; App Service `ramboll-attendance-portal` &rarr; *Environment variables*.
+2. Change `TelemetrySettings__PrePilotModeOnly` to `false`.
+3. Click **Apply** &rarr; **Confirm**.
+4. **Done!** The system automatically expands from the single pilot manager to all managers across Ramboll!

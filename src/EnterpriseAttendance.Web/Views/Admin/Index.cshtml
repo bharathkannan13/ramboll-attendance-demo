@@ -215,15 +215,24 @@
 </div>
 
 <!-- Section 1: Branch-by-Branch Interactive Org Tree -->
-<div class="card">
-    <div class="card-header">
-        <div class="card-title"><i class="fa-solid fa-sitemap" style="color: #00E5FF;"></i> Teams-Style Branch Hierarchy Tree (Click [+] to Expand Sub-Branches)</div>
-        <span class="badge badge-success"><i class="fa-solid fa-shield-check"></i> Auto-Synced via Entra ID (India Only)</span>
+<div class="card" style="border-top: 4px solid #10B981;">
+    <div class="card-header" style="flex-wrap: wrap; gap: 1rem;">
+        <div class="card-title">
+            <i class="fa-solid fa-sitemap" style="color: #10B981;"></i> Interactive Enterprise Org Hierarchy Tree (Click [+] to Expand Branches)
+        </div>
+        <div style="display: flex; gap: 0.6rem; align-items: center; flex-wrap: wrap;">
+            <button id="btnSampleOrgSheet" onclick="toggleOrgDataSource('sample')" class="btn btn-primary" style="padding: 0.4rem 0.85rem; font-size: 0.78rem; background: linear-gradient(135deg, #10B981 0%, #059669 100%);">
+                <i class="fa-solid fa-sitemap"></i> 🏢 Sample Org Sheet Template
+            </button>
+            <button id="btnGraphSyncMode" onclick="toggleOrgDataSource('graph')" class="btn btn-secondary" style="padding: 0.4rem 0.85rem; font-size: 0.78rem; border-color: #8B5CF6; color: #C084FC;">
+                <i class="fa-solid fa-bolt"></i> ⚡ Live Entra ID Graph Sync Mode
+            </button>
+        </div>
     </div>
     
-    <div style="padding: 1.6rem; background: rgba(3, 8, 22, 0.75); border-radius: 14px; border: 1px solid var(--card-border); overflow-x: auto; min-height: 180px;">
+    <div style="padding: 1.6rem; background: rgba(9, 13, 22, 0.95); border-radius: 14px; border: 1px solid var(--card-border); overflow-x: auto; min-height: 220px;">
         <div id="orgChartTreeContainer">
-            <div style="color: var(--text-muted);"><i class="fa-solid fa-spinner fa-spin" style="color: #00E5FF;"></i> Building Org Branch Tree...</div>
+            <!-- Rendered dynamically with sample or live data -->
         </div>
     </div>
 </div>
@@ -368,8 +377,73 @@
         onFilterChange();
     }
 
+    let currentOrgMode = 'sample';
+
+    function toggleOrgDataSource(mode) {
+        currentOrgMode = mode;
+        const btnSample = document.getElementById('btnSampleOrgSheet');
+        const btnGraph = document.getElementById('btnGraphSyncMode');
+
+        if (mode === 'sample') {
+            btnSample.className = 'btn btn-primary';
+            btnSample.style.background = 'linear-gradient(135deg, #10B981 0%, #059669 100%)';
+            btnGraph.className = 'btn btn-secondary';
+            renderPrePopulatedOrgTree();
+        } else {
+            btnGraph.className = 'btn btn-primary';
+            btnGraph.style.background = 'linear-gradient(135deg, #8B5CF6 0%, #7C3AED 100%)';
+            btnSample.className = 'btn btn-secondary';
+            onFilterChange();
+        }
+    }
+
+    function renderPrePopulatedOrgTree() {
+        const sampleTree = {
+            id: 1,
+            fullName: "Bharath Kannan",
+            title: "Executive Director & System Owner",
+            department: "Executive Leadership",
+            roleBadge: "<span class='badge badge-success' style='background: rgba(16,185,129,0.25); color: #34D399; border-color: #10B981;'><i class='fa-solid fa-crown'></i> Administrator</span>",
+            directReports: [
+                {
+                    id: 2,
+                    fullName: "Rajesh Sharma",
+                    title: "Director of Software Engineering",
+                    department: "Software Engineering",
+                    roleBadge: "<span class='badge badge-success' style='background: rgba(16,185,129,0.25); color: #34D399; border-color: #10B981;'><i class='fa-solid fa-user-gear'></i> Administrator</span>",
+                    directReports: [
+                        { id: 101, fullName: "Nisha Patel", title: "Lead Full Stack Architect", department: "Software Engineering", roleBadge: "<span class='badge' style='background: rgba(139,92,246,0.25); color: #C084FC; border: 1px solid #8B5CF6;'><i class='fa-solid fa-user-tie'></i> Manager</span>" },
+                        { id: 102, fullName: "Vikram Seth", title: "Senior DevOps & Cloud Engineer", department: "Software Engineering", roleBadge: "<span class='badge' style='background: rgba(245,158,11,0.25); color: #FBBF24; border: 1px solid #F59E0B;'><i class='fa-solid fa-bolt'></i> PowerUser</span>" }
+                    ]
+                },
+                {
+                    id: 3,
+                    fullName: "Sarah Connor",
+                    title: "Director of Cyber Security & Compliance",
+                    department: "IT Infrastructure & Security",
+                    roleBadge: "<span class='badge' style='background: rgba(139,92,246,0.25); color: #C084FC; border: 1px solid #8B5CF6;'><i class='fa-solid fa-eye'></i> SecurityReader</span>",
+                    directReports: [
+                        { id: 201, fullName: "Ananya Roy", title: "Defender Telemetry Analyst", department: "IT Infrastructure & Security", roleBadge: "<span class='badge' style='background: rgba(139,92,246,0.25); color: #C084FC; border: 1px solid #8B5CF6;'><i class='fa-solid fa-eye'></i> SecurityReader</span>" }
+                    ]
+                },
+                {
+                    id: 4,
+                    fullName: "Kwame Mensah",
+                    title: "Director of Operations & Delivery",
+                    department: "Sales & Business Development",
+                    roleBadge: "<span class='badge' style='background: rgba(16,185,129,0.25); color: #34D399; border-color: #10B981;'><i class='fa-solid fa-user-tie'></i> Manager</span>",
+                    directReports: []
+                }
+            ]
+        };
+
+        const container = document.getElementById('orgChartTreeContainer');
+        container.innerHTML = renderOrgNode(sampleTree);
+        selectManager(sampleTree.id, sampleTree.fullName);
+    }
+
     async function loadOrgTree() {
-        onFilterChange();
+        toggleOrgDataSource('sample');
     }
 
     function renderOrgNode(node) {
@@ -377,7 +451,7 @@
 
         let reportsHtml = '';
         if (node.directReports && node.directReports.length > 0) {
-            reportsHtml = `<div id="branch-child-${node.id}" style="margin-left: 2.2rem; border-left: 2px dashed rgba(0, 229, 255, 0.25); padding-left: 1.2rem; display: flex; flex-direction: column; gap: 0.75rem; margin-top: 0.75rem;">`;
+            reportsHtml = `<div id="branch-child-${node.id}" style="margin-left: 2.2rem; border-left: 2px dashed rgba(139, 92, 246, 0.3); padding-left: 1.2rem; display: flex; flex-direction: column; gap: 0.75rem; margin-top: 0.75rem;">`;
             node.directReports.forEach(child => {
                 reportsHtml += renderOrgNode(child);
             });
@@ -385,22 +459,27 @@
         }
 
         const isSelected = (node.id === activeManagerId);
-        const borderStyle = isSelected ? 'border: 2px solid #00E5FF; background: rgba(0, 229, 255, 0.15); box-shadow: 0 0 20px rgba(0,229,255,0.35);' : 'border: 1px solid var(--card-border); background: rgba(10, 25, 47, 0.85);';
+        const borderStyle = isSelected 
+            ? 'border: 2px solid #10B981; background: rgba(16, 185, 129, 0.2); box-shadow: 0 0 25px rgba(16,185,129,0.4);' 
+            : 'border: 1px solid var(--card-border); background: rgba(9, 13, 22, 0.9);';
         
         const hasChildren = (node.directReports && node.directReports.length > 0);
-        const expandBtn = hasChildren ? `<button onclick="toggleBranchNode(${node.id}, event)" class="btn btn-secondary" style="padding: 0.25rem 0.65rem; font-size: 0.76rem; border-color: #00E5FF; color: #00E5FF;">[+] Sub-Branch</button>` : '';
+        const expandBtn = hasChildren ? `<button onclick="toggleBranchNode(${node.id}, event)" class="btn btn-secondary" style="padding: 0.25rem 0.65rem; font-size: 0.76rem; border-color: #8B5CF6; color: #C084FC;">[+] Sub-Branch</button>` : '';
+        const roleTag = node.roleBadge || "<span class='badge badge-success'><i class='fa-solid fa-user-check'></i> Employee</span>";
 
         return `
             <div style="margin-bottom: 0.45rem;">
-                <div onclick="selectManager(${node.id}, '${node.fullName.replace("'", "\\'")}')" style="display: inline-flex; align-items: center; gap: 0.85rem; ${borderStyle} padding: 0.75rem 1.25rem; border-radius: 14px; cursor: pointer; transition: all 0.25s ease;" onmouseover="this.style.borderColor='#00E5FF'" onmouseout="if(${node.id} !== activeManagerId) this.style.borderColor='var(--card-border)'">
-                    <i class="fa-solid fa-user-tie" style="color: #00E5FF; font-size: 1.2rem;"></i>
+                <div onclick="selectManager(${node.id}, '${node.fullName.replace("'", "\\'")}')" style="display: inline-flex; align-items: center; gap: 0.85rem; ${borderStyle} padding: 0.75rem 1.25rem; border-radius: 14px; cursor: pointer; transition: all 0.25s ease;" onmouseover="this.style.borderColor='#10B981'" onmouseout="if(${node.id} !== activeManagerId) this.style.borderColor='var(--card-border)'">
+                    <i class="fa-solid fa-sitemap" style="color: #10B981; font-size: 1.2rem;"></i>
                     <div>
-                        <div style="font-weight: 700; color: #fff; font-size: 0.98rem;">${node.fullName}</div>
+                        <div style="font-weight: 700; color: #fff; font-size: 0.98rem; display: flex; align-items: center; gap: 0.5rem;">
+                            ${node.fullName} ${roleTag}
+                        </div>
                         <div style="font-size: 0.8rem; color: var(--text-sub);">${node.title} • ${node.department}</div>
                     </div>
                     <span class="badge badge-success" style="margin-left: 0.75rem; font-size: 0.72rem;">3/3 Office Days [MET]</span>
                     ${expandBtn}
-                    <button onclick="inspectUser(${node.id}, event)" class="btn btn-primary" style="padding: 0.3rem 0.7rem; font-size: 0.78rem; margin-left: 0.4rem;"><i class="fa-solid fa-microscope"></i> Inspect Tracking</button>
+                    <button onclick="inspectUser(${node.id}, event)" class="btn btn-primary" style="padding: 0.3rem 0.7rem; font-size: 0.78rem; margin-left: 0.4rem; background: linear-gradient(135deg, #10B981 0%, #059669 100%);"><i class="fa-solid fa-microscope"></i> Inspect Tracking</button>
                 </div>
                 ${reportsHtml}
             </div>

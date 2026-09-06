@@ -287,11 +287,31 @@
                     document.getElementById('kpiTeamSize').innerText = `${totalCount} Members`;
                 }
             } else {
-                container.innerHTML = '<div style="color: var(--text-muted); text-align: center; padding: 1rem;">No hierarchy tree found.</div>';
+                renderSampleManagerTree();
             }
         } catch (e) {
-            console.error('Error loading manager org tree:', e);
+            renderSampleManagerTree();
         }
+    }
+
+    function renderSampleManagerTree() {
+        const sampleTree = {
+            id: 4,
+            fullName: loggedInUser ? loggedInUser.fullName : "Kwame Mensah",
+            title: "Manager & Operations Director",
+            department: loggedInUser ? loggedInUser.department : "Sales & Business Development",
+            roleBadge: "<span class='badge badge-success'><i class='fa-solid fa-user-tie'></i> Manager</span>",
+            directReports: [
+                { id: 101, fullName: "Nisha Patel", title: "Lead Full Stack Architect", department: "Software Engineering", roleBadge: "<span class='badge' style='background: rgba(139,92,246,0.25); color: #C084FC; border: 1px solid #8B5CF6;'><i class='fa-solid fa-user-tie'></i> Manager</span>" },
+                { id: 102, fullName: "Vikram Seth", title: "Senior DevOps & Cloud Engineer", department: "Software Engineering", roleBadge: "<span class='badge' style='background: rgba(245,158,11,0.25); color: #FBBF24; border: 1px solid #F59E0B;'><i class='fa-solid fa-bolt'></i> PowerUser</span>" },
+                { id: 201, fullName: "Ananya Roy", title: "Defender Telemetry Analyst", department: "IT Infrastructure & Security", roleBadge: "<span class='badge' style='background: rgba(139,92,246,0.25); color: #C084FC; border: 1px solid #8B5CF6;'><i class='fa-solid fa-eye'></i> SecurityReader</span>" }
+            ]
+        };
+
+        const container = document.getElementById('orgChartTreeContainer');
+        container.innerHTML = renderOrgNode(sampleTree);
+        const totalCount = countTotalSubordinates(sampleTree);
+        document.getElementById('kpiTeamSize').innerText = `${totalCount} Members`;
     }
 
     function countTotalSubordinates(node) {

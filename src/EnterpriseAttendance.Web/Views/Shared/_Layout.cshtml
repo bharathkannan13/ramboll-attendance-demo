@@ -11,41 +11,34 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
     <style>
         :root {
-            /* Microsoft Fluent & Defender Enterprise Color Palette */
-            --ms-navy-dark: #0B132B;
-            --ms-navy-card: #111C38;
-            --ms-navy-surface: #1C2951;
-            --ms-fluent-blue: #0078D4;
-            --ms-fluent-blue-hover: #106EBE;
-            --ms-cyan: #00A4EF;
-            --ms-green-emerald: #107C41;
-            --ms-amber-warning: #D83B01;
-            --ms-danger-red: #E81123;
+            /* Premium Emerald-Violet Obsidian Palette (No Default Blue) */
+            --bg-dark: #090D16;
+            --bg-card: rgba(15, 23, 42, 0.88);
+            --card-border: rgba(16, 185, 129, 0.25);
+            --card-border-hover: rgba(139, 92, 246, 0.55);
             
-            --bg-dark: #0B132B;
-            --bg-card: rgba(17, 28, 56, 0.88);
-            --card-border: rgba(0, 164, 239, 0.22);
-            --card-border-hover: rgba(0, 164, 239, 0.55);
-            --accent-cyan: #00A4EF;
-            --accent-blue: #0078D4;
-            --accent-green: #107C41;
-            --accent-amber: #F59E0B;
-            --accent-rose: #E81123;
-            --text-main: #F3F4F6;
-            --text-sub: #9CA3AF;
-            --text-muted: #6B7280;
-            --shadow-double: 0 20px 45px -10px rgba(0, 0, 0, 0.75), 0 0 25px rgba(0, 164, 239, 0.12);
+            --accent-emerald: #10B981;
+            --accent-emerald-glow: #34D399;
+            --accent-violet: #8B5CF6;
+            --accent-violet-glow: #C084FC;
+            --accent-gold: #F59E0B;
+            --accent-rose: #EF4444;
+            
+            --text-main: #F8FAFC;
+            --text-sub: #94A3B8;
+            --text-muted: #64748B;
+            --shadow-premium: 0 20px 50px -10px rgba(0, 0, 0, 0.85), 0 0 30px rgba(16, 185, 129, 0.15);
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
         
         body {
             font-family: 'Segoe UI', 'Outfit', 'Plus Jakarta Sans', sans-serif;
-            background: var(--ms-navy-dark);
+            background: var(--bg-dark);
             background-image: 
-                radial-gradient(at 10% 10%, rgba(0, 164, 239, 0.15) 0px, transparent 40%),
-                radial-gradient(at 90% 90%, rgba(0, 120, 212, 0.18) 0px, transparent 45%),
-                radial-gradient(at 50% 50%, rgba(16, 124, 65, 0.08) 0px, transparent 55%);
+                radial-gradient(at 10% 10%, rgba(16, 185, 129, 0.18) 0px, transparent 40%),
+                radial-gradient(at 90% 90%, rgba(139, 92, 246, 0.2) 0px, transparent 45%),
+                radial-gradient(at 50% 50%, rgba(245, 158, 11, 0.1) 0px, transparent 55%);
             background-attachment: fixed;
             color: var(--text-main);
             min-height: 100vh;
@@ -54,33 +47,64 @@
             overflow-x: hidden;
         }
 
-        /* Microsoft Defender Ambient Glow Orbs */
+        /* Premium Aurora Ambient Motion Orbs */
         .ambient-orb {
             position: fixed;
             border-radius: 50%;
-            filter: blur(100px);
+            filter: blur(110px);
             z-index: -1;
             pointer-events: none;
-            opacity: 0.55;
-            animation: floatOrb 20s infinite ease-in-out alternate;
+            opacity: 0.6;
+            animation: auroraMotion 18s infinite ease-in-out alternate;
         }
-        .ambient-orb-1 { width: 550px; height: 550px; background: rgba(0, 164, 239, 0.16); top: -120px; left: -100px; }
-        .ambient-orb-2 { width: 650px; height: 650px; background: rgba(0, 120, 212, 0.18); bottom: -160px; right: -140px; animation-delay: -10s; }
+        .ambient-orb-1 { width: 600px; height: 600px; background: rgba(16, 185, 129, 0.18); top: -140px; left: -120px; }
+        .ambient-orb-2 { width: 700px; height: 700px; background: rgba(139, 92, 246, 0.22); bottom: -180px; right: -160px; animation-delay: -9s; }
+        .ambient-orb-3 { width: 450px; height: 450px; background: rgba(245, 158, 11, 0.12); top: 40%; left: 40%; animation-delay: -5s; }
 
-        @@keyframes floatOrb {
-            0% { transform: translateY(0px) scale(1); }
-            50% { transform: translateY(-25px) scale(1.06); }
-            100% { transform: translateY(25px) scale(0.96); }
+        @@keyframes auroraMotion {
+            0% { transform: translateY(0px) rotate(0deg) scale(1); }
+            50% { transform: translateY(-30px) rotate(180deg) scale(1.08); }
+            100% { transform: translateY(30px) rotate(360deg) scale(0.94); }
         }
 
-        /* Microsoft Fluent Header & Navigation Bar */
+        /* Metallic Shimmer Card Motion */
+        .card {
+            background: linear-gradient(135deg, rgba(15, 23, 42, 0.95) 0%, rgba(9, 13, 22, 0.98) 100%);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid var(--card-border);
+            border-radius: 16px;
+            padding: 1.6rem;
+            margin-bottom: 1.6rem;
+            box-shadow: var(--shadow-premium);
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #10B981 0%, #8B5CF6 50%, #F59E0B 100%);
+            opacity: 0.9;
+        }
+
+        .card:hover {
+            border-color: var(--card-border-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 30px 60px -12px rgba(0, 0, 0, 0.9), 0 0 35px rgba(139, 92, 246, 0.25);
+        }
+
+        /* Navbar Header */
         .navbar {
-            background: rgba(11, 19, 43, 0.92);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border-bottom: 1px solid var(--card-border);
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6), inset 0 -1px 0 rgba(0, 164, 239, 0.2);
-            padding: 0.75rem 2.5rem;
+            background: rgba(9, 13, 22, 0.94);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border-bottom: 1px solid rgba(16, 185, 129, 0.25);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.75);
+            padding: 0.85rem 2.5rem;
             display: flex;
             justify-content: space-between;
             align-items: center;

@@ -1,22 +1,150 @@
-html {
-  font-size: 14px;
+/* ==========================================================================
+   MICROSOFT FLUENT DESIGN SYSTEM 3.0 — ENTERPRISE ATTENDANCE ANALYTICS
+   Official Microsoft Colors, Segoe UI Typography, Fluent Web Parts & Elevation
+   ========================================================================== */
+
+:root {
+  /* Microsoft Corporate Core Palette */
+  --ms-fluent-blue: #0078D4;
+  --ms-fluent-blue-hover: #106EBE;
+  --ms-fluent-blue-dark: #005A9E;
+  --ms-fluent-cyan: #00A4EF;
+  --ms-fluent-green: #107C41;
+  --ms-fluent-orange: #D83B01;
+  --ms-fluent-purple: #5C2D91;
+  --ms-fluent-red: #E81123;
+  --ms-fluent-gray: #605E5C;
+
+  /* Fluent Dark Mode Elevation Layers */
+  --ms-bg-canvas: #0B132B;
+  --ms-bg-card: rgba(17, 28, 56, 0.88);
+  --ms-bg-card-hover: rgba(28, 41, 81, 0.95);
+  --ms-bg-acrylic: rgba(15, 23, 42, 0.75);
+  --ms-border-subtle: rgba(0, 164, 239, 0.22);
+  --ms-border-focus: rgba(0, 164, 239, 0.65);
+
+  /* Typography & Font Tokens */
+  --ms-font-family: 'Segoe UI Variable', 'Segoe UI', -apple-system, BlinkMacSystemFont, 'Roboto', sans-serif;
+  --ms-font-mono: 'Consolas', 'Courier New', monospace;
+
+  /* Shadows & Elevation */
+  --ms-shadow-card: 0 4px 20px rgba(0, 120, 212, 0.12), 0 1px 3px rgba(0, 0, 0, 0.3);
+  --ms-shadow-card-hover: 0 12px 32px rgba(0, 164, 239, 0.25), 0 2px 6px rgba(0, 0, 0, 0.4);
 }
 
-@media (min-width: 768px) {
-  html {
-    font-size: 16px;
-  }
-}
-
-.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
-  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
-}
-
-html {
-  position: relative;
-  min-height: 100%;
-}
-
+/* Global Font & Body Reset */
 body {
-  margin-bottom: 60px;
+  font-family: var(--ms-font-family);
+  background-color: var(--ms-bg-canvas);
+  color: #F3F4F6;
+  margin: 0;
+  padding: 0;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Microsoft Fluent Card Web Part */
+.fluent-card {
+  background: var(--ms-bg-card);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--ms-border-subtle);
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: var(--ms-shadow-card);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  margin-bottom: 20px;
+}
+
+.fluent-card:hover {
+  border-color: var(--ms-border-focus);
+  box-shadow: var(--ms-shadow-card-hover);
+  transform: translateY(-2px);
+}
+
+/* Microsoft Fluent Action Button */
+.fluent-btn-primary {
+  background: linear-gradient(135deg, var(--ms-fluent-blue) 0%, var(--ms-fluent-blue-hover) 100%);
+  color: #FFFFFF;
+  font-family: var(--ms-font-family);
+  font-weight: 600;
+  font-size: 14px;
+  padding: 10px 20px;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  text-decoration: none;
+  box-shadow: 0 2px 6px rgba(0, 120, 212, 0.4);
+  transition: all 0.2s ease;
+}
+
+.fluent-btn-primary:hover {
+  background: var(--ms-fluent-blue-hover);
+  box-shadow: 0 4px 12px rgba(0, 164, 239, 0.6);
+  transform: translateY(-1px);
+
+.fluent-btn-secondary {
+  background: rgba(255, 255, 255, 0.08);
+  color: #F3F4F6;
+  font-family: var(--ms-font-family);
+  font-weight: 600;
+  font-size: 14px;
+  padding: 10px 20px;
+  border-radius: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.fluent-btn-secondary:hover {
+  background: rgba(255, 255, 255, 0.15);
+  border-color: rgba(255, 255, 255, 0.4);
+}
+
+/* Microsoft Pill Status Badges */
+.fluent-badge-office {
+  background: rgba(16, 124, 65, 0.18);
+  color: #107C41;
+  border: 1px solid rgba(16, 124, 65, 0.4);
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-weight: 700;
+  font-size: 12px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.fluent-badge-wfh {
+  background: rgba(216, 59, 1, 0.18);
+  color: #FF8C00;
+  border: 1px solid rgba(216, 59, 1, 0.4);
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-weight: 700;
+  font-size: 12px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* Fluent Interactive Tree Nodes for Manager Console */
+.fluent-tree-node {
+  background: rgba(17, 28, 56, 0.6);
+  border: 1px solid rgba(0, 164, 239, 0.15);
+  border-radius: 8px;
+  padding: 14px 18px;
+  margin-bottom: 10px;
+  transition: all 0.2s ease;
+}
+
+.fluent-tree-node:hover {
+  background: rgba(28, 41, 81, 0.85);
+  border-color: var(--ms-fluent-cyan);
 }

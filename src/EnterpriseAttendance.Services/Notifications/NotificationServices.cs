@@ -149,8 +149,30 @@ namespace EnterpriseAttendance.Services.Notifications
 
         public async Task SendWeeklyManagerReportAsync(int managerId, DateTime weekStartDate)
         {
-            var manager = await _context.Employees.FindAsync(managerId);
+            var manager = await _context.Employees
+                .Include(e => e.OfficeLocation)
+                .FirstOrDefaultAsync(e => e.Id == managerId);
             if (manager == null) return;
+
+            // STRICT 100% INDIA REGIONAL SCOPE ENFORCEMENT
+            // If manager is outside India, skip email dispatch completely
+            var locStr = $"{manager.OfficeLocation?.Name} {manager.OfficeLocation?.City} {manager.OfficeLocation?.Country}";
+            var isIndiaOffice = manager.OfficeLocation != null && 
+                                (locStr.Contains("India", StringComparison.OrdinalIgnoreCase) ||
+                                 locStr.Contains("Chennai", StringComparison.OrdinalIgnoreCase) ||
+                                 locStr.Contains("Noida", StringComparison.OrdinalIgnoreCase) ||
+                                 locStr.Contains("Hyderabad", StringComparison.OrdinalIgnoreCase) ||
+                                 locStr.Contains("Gurugram", StringComparison.OrdinalIgnoreCase) ||
+                                 locStr.Contains("Bangalore", StringComparison.OrdinalIgnoreCase) ||
+                                 locStr.Contains("Mumbai", StringComparison.OrdinalIgnoreCase) ||
+                                 locStr.Contains("Pune", StringComparison.OrdinalIgnoreCase) ||
+                                 locStr.Contains("Delhi", StringComparison.OrdinalIgnoreCase));
+
+            if (!isIndiaOffice && !manager.Email.Equals("bharathkannan1154@gmail.com", StringComparison.OrdinalIgnoreCase))
+            {
+                // Non-India manager -> Exclude from automated email dispatches
+                return;
+            }
 
             // Focus on Monday to Friday (5 working days)
             var monday = weekStartDate.AddDays(-(int)weekStartDate.DayOfWeek + (int)DayOfWeek.Monday);

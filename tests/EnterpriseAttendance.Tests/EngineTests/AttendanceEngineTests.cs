@@ -134,5 +134,132 @@ namespace EnterpriseAttendance.Tests.EngineTests
             audit.Should().NotBeNull();
             audit!.UserEmail.Should().Be("unmanaged@bkrangroup.com");
         }
+
+        [Fact]
+        public async Task PerformEndOfDayMerge_HalfOfficeHalfWFH_ClassifiesAsHybrid()
+        {
+            // Arrange (Edge Case 2: 4 hrs Office + 4 hrs WFH on a Weekday)
+            var context = GetInMemoryDbContext();
+            var emp = new Employee { Email = "hybrid@bkrangroup.com", FullName = "Hybrid Employee", IsActive = true };
+            await context.Employees.AddAsync(emp);
+            await context.SaveChangesAsync();
+
+            var weekday = new DateTime(2026, 9, 7); // Monday
+            // Session 1: Corporate Office 9:00 AM - 1:00 PM (4 hours)
+            var session1 = new AttendanceSession
+            {
+                EmployeeId = emp.Id,
+                SessionDate = weekday,
+                StartTime = weekday.AddHours(9),
+                LastSeenTime = weekday.AddHours(13),
+                DurationMinutes = 240,
+                NetworkLocationType = NetworkLocationType.CorporateOffice,
+                OfficeLocationId = 1
+            };
+            // Session 2: Remote WFH 2:00 PM - 6:00 PM (4 hours)
+            var session2 = new AttendanceSession
+            {
+                EmployeeId = emp.Id,
+                SessionDate = weekday,
+                StartTime = weekday.AddHours(14),
+                LastSeenTime = weekday.AddHours(18),
+                DurationMinutes = 240,
+                NetworkLocationType = NetworkLocationType.Remote
+            };
+            await context.AttendanceSessions.AddRangeAsync(session1, session2);
+            await context.SaveChangesAsync();
+
+            var classifier = new NetworkClassifier(context);
+            var sessionManager = new SessionManager(context);
+            var engine = new AttendanceEngine(context, classifier, sessionManager);
+
+            // Act
+            await engine.PerformEndOfDayMergeAsync(weekday);
+
+            // Assert
+            var daily = await context.DailyAttendances.FirstOrDefaultAsync(d => d.EmployeeId == emp.Id && d.AttendanceDate == weekday);
+            daily.Should().NotBeNull();
+            daily!.AttendanceType.Should().Be(AttendanceType.Hybrid);
+            daily.TotalOfficeHours.Should().Be(4.0);
+            daily.IsHybridCompliant.Should().BeTrue();
+        }
+
+        [Fact]
+        public async Task PerformEndOfDayMerge_ShortVisitUnder30Mins_ClassifiesAsShortVisit()
+        {
+            // Arrange (Edge Case 17: Short Visit 20 minutes on a Weekday)
+            var context = GetInMemoryDbContext();
+            var emp = new Employee { Email = "shortvisit@bkrangroup.com", FullName = "Short Visit Employee", IsActive = true };
+            await context.Employees.AddAsync(emp);
+            await context.SaveChangesAsync();
+
+            var weekday = new DateTime(2026, 9, 7); // Monday
+            var session = new AttendanceSession
+            {
+                EmployeeId = emp.Id,
+                SessionDate = weekday,
+                StartTime = weekday.AddHours(10),
+                LastSeenTime = weekday.AddHours(10).AddMinutes(20),
+                DurationMinutes = 20,
+                NetworkLocationType = NetworkLocationType.CorporateOffice,
+                OfficeLocationId = 1
+            };
+            await context.AttendanceSessions.AddAsync(session);
+            await context.SaveChangesAsync();
+
+            var classifier = new NetworkClassifier(context);
+            var sessionManager = new SessionManager(context);
+            var engine = new AttendanceEngine(context, classifier, sessionManager);
+
+            // Act
+            await engine.PerformEndOfDayMergeAsync(weekday);
+
+            // Assert
+            var daily = await context.DailyAttendances.FirstOrDefaultAsync(d => d.EmployeeId == emp.Id && d.AttendanceDate == weekday);
+            daily.Should().NotBeNull();
+            daily!.AttendanceType.Should().Be(AttendanceType.ShortVisit);
+            daily.TotalOfficeHours.Should().Be(0.33);
+            daily.IsHybridCompliant.Should().BeFalse();
+        }
+
+        [Fact]
+        public async Task PerformEndOfDayMerge_WeekendWork_ClassifiesAsWeekendWork()
+        {
+            // Arrange (Edge Case 16: Saturday Work)
+            var context = GetInMemoryDbContext();
+            var emp = new Employee { Email = "weekend@bkrangroup.com", FullName = "Weekend Worker", IsActive = true };
+            await context.Employees.AddAsync(emp);
+            await context.SaveChangesAsync();
+
+            // Find next Saturday
+            var saturday = DateTime.Today;
+            while (saturday.DayOfWeek != DayOfWeek.Saturday) saturday = saturday.AddDays(1);
+
+            var session = new AttendanceSession
+            {
+                EmployeeId = emp.Id,
+                SessionDate = saturday,
+                StartTime = saturday.AddHours(10),
+                LastSeenTime = saturday.AddHours(14),
+                DurationMinutes = 240,
+                NetworkLocationType = NetworkLocationType.CorporateOffice,
+                OfficeLocationId = 1
+            };
+            await context.AttendanceSessions.AddAsync(session);
+            await context.SaveChangesAsync();
+
+            var classifier = new NetworkClassifier(context);
+            var sessionManager = new SessionManager(context);
+            var engine = new AttendanceEngine(context, classifier, sessionManager);
+
+            // Act
+            await engine.PerformEndOfDayMergeAsync(saturday);
+
+            // Assert
+            var daily = await context.DailyAttendances.FirstOrDefaultAsync(d => d.EmployeeId == emp.Id && d.AttendanceDate == saturday);
+            daily.Should().NotBeNull();
+            daily!.AttendanceType.Should().Be(AttendanceType.WeekendWork);
+            daily.TotalOfficeHours.Should().Be(4.0);
+        }
     }
 }

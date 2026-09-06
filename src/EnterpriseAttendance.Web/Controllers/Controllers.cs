@@ -992,4 +992,186 @@ namespace EnterpriseAttendance.Web.Controllers
         public string RuleKey { get; set; } = string.Empty;
         public string RuleValue { get; set; } = string.Empty;
     }
+
+    // =====================================================================
+    // ADMIN ROLE CONTROLLER — Dynamic UI-Based RBAC with Auto-Expiry
+    // =====================================================================
+    [ApiController]
+    [Route("api/[controller]")]
+    public class AdminRoleController : ControllerBase
+    {
+        private readonly AttendanceDbContext _context;
+
+        public AdminRoleController(AttendanceDbContext context)
+        {
+            _context = context;
+        }
+
+        /// <summary>
+        /// Get all dynamic UI role assignments (Active, Expired, Revoked)
+        /// </summary>
+        [HttpGet("assignments")]
+        public async Task<IActionResult> GetRoleAssignments()
+        {
+            var assignments = await _context.UserRoleAssignments
+                .OrderByDescending(a => a.AssignedAt)
+                .ToListAsync();
+
+            var now = DateTime.UtcNow;
+            var dtos = assignments.Select(a => new
+            {
+                a.Id,
+                a.UserEmail,
+                Role = a.AssignedRole.ToString(),
+                a.AssignedByAdminEmail,
+                a.AssignedAt,
+                a.ExpiresAt,
+                a.IsRevoked,
+                a.RevocationReason,
+                a.ExtensionRequested,
+                DaysRemaining = a.IsRevoked ? 0 : Math.Max(0, (int)(a.ExpiresAt - now).TotalDays),
+                Status = a.IsRevoked ? "REVOKED" : (a.ExpiresAt < now ? "EXPIRED" : "ACTIVE")
+            });
+
+            return Ok(dtos);
+        }
+
+        /// <summary>
+        /// Assign Security Reader or Admin Read-Only Role to a corporate email with expiry (90, 180, 365 Days)
+        /// </summary>
+        [HttpPost("assign")]
+        public async Task<IActionResult> AssignRole([FromBody] RoleAssignRequest request)
+        {
+            if (string.IsNullOrWhiteSpace(request.UserEmail))
+            {
+                return BadRequest(new { message = "Corporate user email is required." });
+            }
+
+            int durationDays = request.DurationDays > 0 ? request.DurationDays : 90;
+            var expiry = DateTime.UtcNow.AddDays(durationDays);
+
+            var existing = await _context.UserRoleAssignments
+                .FirstOrDefaultAsync(a => a.UserEmail.ToLower() == request.UserEmail.ToLower() && !a.IsRevoked);
+
+            if (existing != null)
+            {
+                existing.AssignedRole = request.Role;
+                existing.ExpiresAt = expiry;
+                existing.AssignedByAdminEmail = request.AdminEmail ?? "admin@ramboll.com";
+                existing.AssignedAt = DateTime.UtcNow;
+                _context.UserRoleAssignments.Update(existing);
+            }
+            else
+            {
+                var assignment = new UserRoleAssignment
+                {
+                    UserEmail = request.UserEmail.Trim(),
+                    AssignedRole = request.Role,
+                    AssignedByAdminEmail = request.AdminEmail ?? "admin@ramboll.com",
+                    AssignedAt = DateTime.UtcNow,
+                    ExpiresAt = expiry,
+                    IsRevoked = false
+                };
+                await _context.UserRoleAssignments.AddAsync(assignment);
+            }
+
+            await _context.SaveChangesAsync();
+
+            // Log security audit
+            await _context.AuditLogs.AddAsync(new AuditLog
+            {
+                UserEmail = request.AdminEmail ?? "admin@ramboll.com",
+                Action = "ASSIGN_SECURITY_ROLE",
+                EntityType = "UserRoleAssignment",
+                Details = $"Assigned {request.Role} to {request.UserEmail} for {durationDays} days (Expires {expiry:yyyy-MM-dd})."
+            });
+            await _context.SaveChangesAsync();
+
+            return Ok(new { success = true, message = $"Role '{request.Role}' assigned to {request.UserEmail} for {durationDays} days." });
+        }
+
+        /// <summary>
+        /// Manually revoke role access for a corporate user immediately
+        /// </summary>
+        [HttpPost("revoke")]
+        public async Task<IActionResult> RevokeRole([FromBody] RoleRevokeRequest request)
+        {
+            var assignment = await _context.UserRoleAssignments.FindAsync(request.AssignmentId);
+            if (assignment == null)
+            {
+                return NotFound(new { message = "Role assignment not found." });
+            }
+
+            assignment.IsRevoked = true;
+            assignment.RevocationReason = request.Reason ?? "Manual revocation by Administrator";
+            _context.UserRoleAssignments.Update(assignment);
+
+            await _context.AuditLogs.AddAsync(new AuditLog
+            {
+                UserEmail = request.AdminEmail ?? "admin@ramboll.com",
+                Action = "REVOKE_SECURITY_ROLE",
+                EntityType = "UserRoleAssignment",
+                Details = $"Revoked role from {assignment.UserEmail}. Reason: {assignment.RevocationReason}"
+            });
+
+            await _context.SaveChangesAsync();
+            return Ok(new { success = true, message = $"Access revoked for {assignment.UserEmail}." });
+        }
+
+        /// <summary>
+        /// Extend role access by 90 or 365 days
+        /// </summary>
+        [HttpPost("extend")]
+        public async Task<IActionResult> ExtendRole([FromBody] RoleExtendRequest request)
+        {
+            var assignment = await _context.UserRoleAssignments.FindAsync(request.AssignmentId);
+            if (assignment == null)
+            {
+                return NotFound(new { message = "Role assignment not found." });
+            }
+
+            int extraDays = request.AdditionalDays > 0 ? request.AdditionalDays : 90;
+            assignment.ExpiresAt = assignment.ExpiresAt > DateTime.UtcNow 
+                ? assignment.ExpiresAt.AddDays(extraDays) 
+                : DateTime.UtcNow.AddDays(extraDays);
+
+            assignment.IsRevoked = false;
+            assignment.ExtensionRequested = false;
+
+            _context.UserRoleAssignments.Update(assignment);
+
+            await _context.AuditLogs.AddAsync(new AuditLog
+            {
+                UserEmail = request.AdminEmail ?? "admin@ramboll.com",
+                Action = "EXTEND_SECURITY_ROLE",
+                EntityType = "UserRoleAssignment",
+                Details = $"Extended role for {assignment.UserEmail} by {extraDays} days (New Expiry: {assignment.ExpiresAt:yyyy-MM-dd})."
+            });
+
+            await _context.SaveChangesAsync();
+            return Ok(new { success = true, message = $"Access extended by {extraDays} days for {assignment.UserEmail}." });
+        }
+    }
+
+    public class RoleAssignRequest
+    {
+        public string UserEmail { get; set; } = string.Empty;
+        public UserRole Role { get; set; } = UserRole.SecurityReader;
+        public int DurationDays { get; set; } = 90; // 90, 180, 365
+        public string? AdminEmail { get; set; }
+    }
+
+    public class RoleRevokeRequest
+    {
+        public int AssignmentId { get; set; }
+        public string? Reason { get; set; }
+        public string? AdminEmail { get; set; }
+    }
+
+    public class RoleExtendRequest
+    {
+        public int AssignmentId { get; set; }
+        public int AdditionalDays { get; set; } = 90;
+        public string? AdminEmail { get; set; }
+    }
 }

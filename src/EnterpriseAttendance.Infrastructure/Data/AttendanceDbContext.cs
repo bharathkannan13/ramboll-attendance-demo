@@ -45,6 +45,7 @@ namespace EnterpriseAttendance.Infrastructure.Data
         public DbSet<DeviceMaster> DeviceMasters => Set<DeviceMaster>();
         public DbSet<AttendanceRiskLog> AttendanceRiskLogs => Set<AttendanceRiskLog>();
         public DbSet<AnalyticsLog> AnalyticsLogs => Set<AnalyticsLog>();
+        public DbSet<UserRoleAssignment> UserRoleAssignments => Set<UserRoleAssignment>();
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

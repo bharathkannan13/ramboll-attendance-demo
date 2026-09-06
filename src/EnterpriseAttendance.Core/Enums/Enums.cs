@@ -81,7 +81,8 @@ namespace EnterpriseAttendance.Core.Enums
     {
         Administrator = 1,
         Manager = 2,
-        PowerUser = 3  // Read-only access to Admin Dashboard (created by Admin)
+        PowerUser = 3,      // Read-only access to Admin Dashboard
+        SecurityReader = 4  // Full security read-only access (assigned via UI for 90/365 days)
     }
 
     public enum PeriodType

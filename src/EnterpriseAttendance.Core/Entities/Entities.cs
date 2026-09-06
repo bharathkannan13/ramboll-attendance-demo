@@ -473,4 +473,18 @@ namespace EnterpriseAttendance.Core.Entities
         public string Prediction_Value { get; set; } = string.Empty;
         public DateTime Generated_Time { get; set; } = DateTime.UtcNow;
     }
+
+    // Dynamic UI-Based Role Assignment with Expiry
+    public class UserRoleAssignment
+    {
+        public int Id { get; set; }
+        public string UserEmail { get; set; } = string.Empty;
+        public UserRole AssignedRole { get; set; } = UserRole.SecurityReader;
+        public string AssignedByAdminEmail { get; set; } = string.Empty;
+        public DateTime AssignedAt { get; set; } = DateTime.UtcNow;
+        public DateTime ExpiresAt { get; set; } = DateTime.UtcNow.AddDays(90);
+        public bool IsRevoked { get; set; } = false;
+        public string? RevocationReason { get; set; }
+        public bool ExtensionRequested { get; set; } = false;
+    }
 }

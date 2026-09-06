@@ -18,6 +18,12 @@ namespace EnterpriseAttendance.Web.Controllers
         {
             return View("~/Views/Admin/Index.cshtml");
         }
+
+        [HttpGet("/Admin/Roles")]
+        public IActionResult Roles()
+        {
+            return View("~/Views/Admin/Roles.cshtml");
+        }
     }
 
     public class ManagerViewController : Controller

@@ -1,0 +1,208 @@
+@{
+    ViewData["Title"] = "RBAC & Role Access Delegation Console";
+}
+
+<div class="fluent-card">
+    <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(0, 164, 239, 0.2); padding-bottom: 1rem; margin-bottom: 1.5rem;">
+        <div>
+            <h2 style="margin: 0; color: #fff; font-size: 1.4rem; font-weight: 700; display: flex; align-items: center; gap: 0.75rem;">
+                <i class="fa-solid fa-user-lock" style="color: #00A4EF;"></i> Role-Based Access Control (RBAC) & Security Reader Delegation
+            </h2>
+            <p style="margin: 0.35rem 0 0 0; font-size: 0.85rem; color: #94A3B8;">
+                Assign temporary Security Reader (Read-Only Admin) or Administrator privileges to corporate emails with 90 or 365-day automatic revocation.
+            </p>
+        </div>
+        <div>
+            <span class="fluent-badge-office" style="font-size: 0.8rem; padding: 0.4rem 0.9rem;">
+                <i class="fa-solid fa-shield-halved"></i> Owner Privilege Mode Active
+            </span>
+        </div>
+    </div>
+
+    <!-- UI ROLE ASSIGNMENT FORM -->
+    <div style="background: rgba(15, 23, 42, 0.6); border: 1px solid rgba(0, 164, 239, 0.2); border-radius: 10px; padding: 1.5rem; margin-bottom: 2rem;">
+        <h4 style="margin: 0 0 1rem 0; color: #00A4EF; font-size: 1rem; font-weight: 700; display: flex; align-items: center; gap: 0.5rem;">
+            <i class="fa-solid fa-user-plus"></i> Delegate Security Access (Assign New Role)
+        </h4>
+
+        <form id="assignRoleForm" style="display: grid; grid-template-columns: 2fr 1.5fr 1.5fr 1fr; gap: 1rem; align-items: end;">
+            <div>
+                <label style="display: block; font-size: 0.8rem; font-weight: 600; color: #CBD5E1; margin-bottom: 0.4rem;">
+                    Corporate User Email Address
+                </label>
+                <input type="email" id="userEmailInput" placeholder="e.g. colleague@ramboll.com" required
+                       style="width: 100%; background: #0B132B; border: 1px solid rgba(0, 164, 239, 0.3); color: #fff; padding: 0.65rem 0.9rem; border-radius: 6px; font-size: 0.88rem;" />
+            </div>
+
+            <div>
+                <label style="display: block; font-size: 0.8rem; font-weight: 600; color: #CBD5E1; margin-bottom: 0.4rem;">
+                    Target Security Role
+                </label>
+                <select id="roleSelect" style="width: 100%; background: #0B132B; border: 1px solid rgba(0, 164, 239, 0.3); color: #fff; padding: 0.65rem 0.9rem; border-radius: 6px; font-size: 0.88rem;">
+                    <option value="4" selected>Security Reader (Read-Only Admin)</option>
+                    <option value="1">Administrator (Full Admin Access)</option>
+                    <option value="3">Power User (Department Analytics)</option>
+                </select>
+            </div>
+
+            <div>
+                <label style="display: block; font-size: 0.8rem; font-weight: 600; color: #CBD5E1; margin-bottom: 0.4rem;">
+                    Access Duration & Auto-Expiry
+                </label>
+                <select id="durationSelect" style="width: 100%; background: #0B132B; border: 1px solid rgba(0, 164, 239, 0.3); color: #fff; padding: 0.65rem 0.9rem; border-radius: 6px; font-size: 0.88rem;">
+                    <option value="90" selected>90 Days (Quarterly Access)</option>
+                    <option value="180">180 Days (Semi-Annual Access)</option>
+                    <option value="365">365 Days (Annual Access)</option>
+                </select>
+            </div>
+
+            <div>
+                <button type="submit" class="fluent-btn-primary" style="width: 100%; justify-content: center; padding: 0.65rem;">
+                    <i class="fa-solid fa-key"></i> Assign Access
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- ACTIVE ROLE ASSIGNMENTS TABLE -->
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+        <h3 style="margin: 0; color: #fff; font-size: 1.1rem; font-weight: 700;">
+            Active Security Role Assignments & Expiry Log
+        </h3>
+        <button onclick="loadRoleAssignments()" class="fluent-btn-secondary" style="font-size: 0.78rem; padding: 0.4rem 0.8rem;">
+            <i class="fa-solid fa-rotate"></i> Refresh Grid
+        </button>
+    </div>
+
+    <div style="overflow-x: auto;">
+        <table style="width: 100%; border-collapse: collapse; font-size: 0.86rem; color: #F3F4F6;">
+            <thead>
+                <tr style="background: #0B132B; color: #00A4EF; border-bottom: 2px solid rgba(0, 164, 239, 0.3); text-align: left;">
+                    <th style="padding: 0.8rem 1rem;">User Email</th>
+                    <th style="padding: 0.8rem 1rem;">Assigned Role</th>
+                    <th style="padding: 0.8rem 1rem;">Assigned By</th>
+                    <th style="padding: 0.8rem 1rem;">Assigned Date</th>
+                    <th style="padding: 0.8rem 1rem;">Expiration Date</th>
+                    <th style="padding: 0.8rem 1rem;">Days Left</th>
+                    <th style="padding: 0.8rem 1rem;">Access Status</th>
+                    <th style="padding: 0.8rem 1rem; text-align: right;">Owner Actions</th>
+                </tr>
+            </thead>
+            <tbody id="roleAssignmentsTbody">
+                <tr>
+                    <td colspan="8" style="padding: 2rem; text-align: center; color: #94A3B8;">
+                        <i class="fa-solid fa-spinner fa-spin" style="font-size: 1.5rem; color: #00A4EF;"></i>
+                        <p style="margin-top: 0.5rem;">Loading Security Role Assignments...</p>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        loadRoleAssignments();
+
+        document.getElementById("assignRoleForm").addEventListener("submit", function (e) {
+            e.preventDefault();
+            const email = document.getElementById("userEmailInput").value.trim();
+            const role = parseInt(document.getElementById("roleSelect").value);
+            const duration = parseInt(document.getElementById("durationSelect").value);
+
+            fetch("/api/AdminRole/assign", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    userEmail: email,
+                    role: role,
+                    durationDays: duration,
+                    adminEmail: "admin@ramboll.com"
+                })
+            })
+            .then(res => res.json())
+            .then(data => {
+                alert(data.message || "Role assigned successfully.");
+                document.getElementById("userEmailInput").value = "";
+                loadRoleAssignments();
+            })
+            .catch(err => alert("Error assigning role: " + err));
+        });
+    });
+
+    function loadRoleAssignments() {
+        fetch("/api/AdminRole/assignments")
+            .then(res => res.json())
+            .then(data => {
+                const tbody = document.getElementById("roleAssignmentsTbody");
+                if (!data || data.length === 0) {
+                    tbody.innerHTML = `
+                        <tr>
+                            <td colspan="8" style="padding: 1.5rem; text-align: center; color: #94A3B8;">
+                                No active role assignments found. Assign a security role above.
+                            </td>
+                        </tr>`;
+                    return;
+                }
+
+                let html = "";
+                data.forEach(item => {
+                    const statusBadge = item.status === "ACTIVE" 
+                        ? `<span class="fluent-badge-office"><i class="fa-solid fa-circle-check"></i> ACTIVE</span>`
+                        : (item.status === "REVOKED" 
+                            ? `<span style="background: rgba(232, 11, 35, 0.2); color: #E81123; border: 1px solid rgba(232, 11, 35, 0.4); padding: 4px 10px; border-radius: 12px; font-weight: 700; font-size: 11px;">REVOKED</span>`
+                            : `<span class="fluent-badge-wfh"><i class="fa-solid fa-clock-rotate-left"></i> EXPIRED</span>`);
+
+                    const assignedDate = new Date(item.assignedAt).toLocaleDateString();
+                    const expiryDate = new Date(item.expiresAt).toLocaleDateString();
+
+                    html += `
+                        <tr style="border-bottom: 1px solid rgba(0, 164, 239, 0.1);">
+                            <td style="padding: 0.8rem 1rem; font-weight: 600; color: #fff;">${item.userEmail}</td>
+                            <td style="padding: 0.8rem 1rem;"><span style="color: #00A4EF; font-weight: 600;">${item.role}</span></td>
+                            <td style="padding: 0.8rem 1rem; color: #94A3B8;">${item.assignedByAdminEmail}</td>
+                            <td style="padding: 0.8rem 1rem;">${assignedDate}</td>
+                            <td style="padding: 0.8rem 1rem;">${expiryDate}</td>
+                            <td style="padding: 0.8rem 1rem; font-weight: bold; color: ${item.daysRemaining < 10 ? '#E81123' : '#107C41'};">
+                                ${item.daysRemaining} Days
+                            </td>
+                            <td style="padding: 0.8rem 1rem;">${statusBadge}</td>
+                            <td style="padding: 0.8rem 1rem; text-align: right;">
+                                ${item.status === "ACTIVE" 
+                                    ? `<button onclick="revokeAccess(${item.id})" class="btn btn-secondary" style="padding: 0.3rem 0.6rem; font-size: 0.75rem; color: #E81123; border-color: rgba(232,11,35,0.4);"><i class="fa-solid fa-user-xmark"></i> Revoke</button>`
+                                    : `<button onclick="extendAccess(${item.id})" class="fluent-btn-primary" style="padding: 0.3rem 0.6rem; font-size: 0.75rem;"><i class="fa-solid fa-clock"></i> Extend +90D</button>`}
+                            </td>
+                        </tr>`;
+                });
+                tbody.innerHTML = html;
+            })
+            .catch(err => console.error("Error loading assignments:", err));
+    }
+
+    function revokeAccess(id) {
+        if (!confirm("Are you sure you want to revoke security access for this user immediately?")) return;
+        fetch("/api/AdminRole/revoke", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ assignmentId: id, reason: "Revoked by Admin Owner via UI" })
+        })
+        .then(res => res.json())
+        .then(data => {
+            alert(data.message);
+            loadRoleAssignments();
+        });
+    }
+
+    function extendAccess(id) {
+        fetch("/api/AdminRole/extend", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ assignmentId: id, additionalDays: 90 })
+        })
+        .then(res => res.json())
+        .then(data => {
+            alert(data.message);
+            loadRoleAssignments();
+        });
+    }
+</script>

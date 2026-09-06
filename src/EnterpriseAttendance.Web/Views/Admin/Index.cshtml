@@ -64,28 +64,28 @@
     </div>
 </div>
 
-<!-- FEATURE 1 & FEATURE 2: Interactive Executive Analytics Section -->
-<div class="grid" style="grid-template-columns: 1fr 1fr; gap: 1.6rem; margin-top: 1.85rem;">
-    <!-- Feature 1: Per-Office Branch Occupancy Heatmap & Donut Chart -->
+<!-- Interactive Executive Analytics Section -->
+<div class="grid" style="grid-template-columns: 1fr 1fr; gap: 1.8rem; margin-top: 2rem;">
+    <!-- Per-Office Branch Occupancy Heatmap & Donut Chart -->
     <div class="card" style="margin-bottom: 0;">
         <div class="card-header">
             <div class="card-title">
-                <i class="fa-solid fa-chart-pie" style="color: #00E5FF;"></i> Feature 1: Per-Office Branch Occupancy (India Offices)
+                <i class="fa-solid fa-chart-pie" style="color: #10B981;"></i> Branch Occupancy & Capacity Utilization
             </div>
-            <span class="badge badge-success"><i class="fa-solid fa-location-dot"></i> 5 Indian Hubs</span>
+            <span class="badge badge-success" style="background: rgba(16,185,129,0.2); color: #34D399; border-color: #10B981;"><i class="fa-solid fa-location-dot"></i> 5 Indian Hubs</span>
         </div>
         <div style="padding: 0.5rem; height: 260px; display: flex; justify-content: center; align-items: center;">
             <canvas id="branchOccupancyChart"></canvas>
         </div>
     </div>
 
-    <!-- Feature 2: Departmental Compliance Comparison Bar Chart -->
+    <!-- Departmental Compliance Comparison Bar Chart -->
     <div class="card" style="margin-bottom: 0;">
         <div class="card-header">
             <div class="card-title">
-                <i class="fa-solid fa-chart-column" style="color: #10B981;"></i> Feature 2: Department Compliance Comparison
+                <i class="fa-solid fa-chart-column" style="color: #8B5CF6;"></i> Departmental Policy Compliance Matrix
             </div>
-            <span class="badge badge-success"><i class="fa-solid fa-users"></i> Department Matrix</span>
+            <span class="badge badge-success" style="background: rgba(139,92,246,0.2); color: #C084FC; border-color: #8B5CF6;"><i class="fa-solid fa-users"></i> Department Analysis</span>
         </div>
         <div style="padding: 0.5rem; height: 260px; display: flex; justify-content: center; align-items: center;">
             <canvas id="deptComplianceChart"></canvas>
@@ -93,55 +93,55 @@
     </div>
 </div>
 
-<!-- FEATURE 5: Microsoft 365 Graph Sync Health & Pipeline Monitor (India Filtered) -->
-<div class="card" style="border: 1px solid rgba(0, 229, 255, 0.25); background: linear-gradient(135deg, rgba(6, 20, 44, 0.9) 0%, rgba(10, 25, 47, 0.9) 100%);">
+<!-- Microsoft 365 Graph Sync Health & Pipeline Monitor (India Filtered) -->
+<div class="card" style="border: 1px solid rgba(16, 185, 129, 0.3); background: linear-gradient(135deg, rgba(15, 23, 42, 0.95) 0%, rgba(9, 13, 22, 0.98) 100%); margin-top: 1.8rem;">
     <div class="card-header">
         <div class="card-title">
-            <i class="fa-solid fa-heart-pulse" style="color: #00E5FF;"></i> Feature 5: Microsoft 365 Graph API Ecosystem Sync Health
+            <i class="fa-solid fa-heart-pulse" style="color: #10B981;"></i> Microsoft 365 Ecosystem Sync Health & Ingestion Pipeline
         </div>
-        <span class="badge badge-success" style="background: rgba(0, 229, 255, 0.15); color: #00E5FF; border-color: rgba(0, 229, 255, 0.4);">
-            <i class="fa-solid fa-filter"></i> Filter: India Region Accounts Only
+        <span class="badge badge-success" style="background: rgba(16, 185, 129, 0.2); color: #34D399; border-color: #10B981;">
+            <i class="fa-solid fa-filter"></i> India Regional Scope Only
         </span>
     </div>
 
-    <div class="grid" style="grid-template-columns: repeat(3, 1fr); gap: 1.2rem; margin-bottom: 0;">
-        <div style="background: rgba(3, 8, 22, 0.8); border: 1px solid var(--card-border); padding: 1.2rem; border-radius: 14px;">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
-                <span style="font-weight: 700; color: #fff; font-size: 0.92rem;"><i class="fa-brands fa-microsoft" style="color: #00E5FF; margin-right: 0.4rem;"></i> Entra ID User Sync</span>
-                <span class="badge badge-success">ACTIVE SYNC</span>
+    <div class="grid" style="grid-template-columns: repeat(3, 1fr); gap: 1.4rem; margin-bottom: 0;">
+        <div style="background: rgba(9, 13, 22, 0.9); border: 1px solid var(--card-border); padding: 1.3rem; border-radius: 14px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.6rem;">
+                <span style="font-weight: 700; color: #fff; font-size: 0.92rem;"><i class="fa-brands fa-microsoft" style="color: #10B981; margin-right: 0.4rem;"></i> Entra ID User Sync</span>
+                <span class="badge badge-success">ACTIVE</span>
             </div>
             <div style="font-size: 0.82rem; color: var(--text-sub);">Filter: <code>officeLocation IN (Chennai, Noida, Hyderabad, Gurugram, Bangalore)</code></div>
-            <div style="font-size: 0.78rem; color: #34D399; margin-top: 0.4rem;"><i class="fa-solid fa-circle-check"></i> 18,450 India Employees Synced</div>
+            <div style="font-size: 0.78rem; color: #34D399; margin-top: 0.5rem;"><i class="fa-solid fa-circle-check"></i> 18,450 India Workforce Synced</div>
         </div>
 
-        <div style="background: rgba(3, 8, 22, 0.8); border: 1px solid var(--card-border); padding: 1.2rem; border-radius: 14px;">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
-                <span style="font-weight: 700; color: #fff; font-size: 0.92rem;"><i class="fa-solid fa-laptop-medical" style="color: #3B82F6; margin-right: 0.4rem;"></i> Intune Device Inventory</span>
-                <span class="badge badge-success">COMPLIANT</span>
+        <div style="background: rgba(9, 13, 22, 0.9); border: 1px solid var(--card-border); padding: 1.3rem; border-radius: 14px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.6rem;">
+                <span style="font-weight: 700; color: #fff; font-size: 0.92rem;"><i class="fa-solid fa-laptop-medical" style="color: #8B5CF6; margin-right: 0.4rem;"></i> Intune Device Inventory</span>
+                <span class="badge badge-success" style="background: rgba(139,92,246,0.2); color: #C084FC; border-color: #8B5CF6;">COMPLIANT</span>
             </div>
-            <div style="font-size: 0.82rem; color: var(--text-sub);">Scope: Indian Workforce Laptops Only (Excludes Denmark/Non-India)</div>
-            <div style="font-size: 0.78rem; color: #60A5FA; margin-top: 0.4rem;"><i class="fa-solid fa-shield-check"></i> 100% Intune Compliance Verified</div>
+            <div style="font-size: 0.82rem; color: var(--text-sub);">Scope: Managed Corporate Laptops (Excludes Non-India Tenants)</div>
+            <div style="font-size: 0.78rem; color: #C084FC; margin-top: 0.5rem;"><i class="fa-solid fa-shield-check"></i> 100% Intune Compliance Verified</div>
         </div>
 
-        <div style="background: rgba(3, 8, 22, 0.8); border: 1px solid var(--card-border); padding: 1.2rem; border-radius: 14px;">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
-                <span style="font-weight: 700; color: #fff; font-size: 0.92rem;"><i class="fa-solid fa-shield-halved" style="color: #10B981; margin-right: 0.4rem;"></i> Defender Telemetry Pipeline</span>
-                <span class="badge badge-success">INGESTING</span>
+        <div style="background: rgba(9, 13, 22, 0.9); border: 1px solid var(--card-border); padding: 1.3rem; border-radius: 14px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.6rem;">
+                <span style="font-weight: 700; color: #fff; font-size: 0.92rem;"><i class="fa-solid fa-shield-halved" style="color: #F59E0B; margin-right: 0.4rem;"></i> Defender Telemetry Pipeline</span>
+                <span class="badge badge-success" style="background: rgba(245,158,11,0.2); color: #FBBF24; border-color: #F59E0B;">INGESTING</span>
             </div>
-            <div style="font-size: 0.82rem; color: var(--text-sub);">Pulse: Bitwise CIDR Subnet & Corporate SSID Network Classification</div>
-            <div style="font-size: 0.78rem; color: #A7F3D0; margin-top: 0.4rem;"><i class="fa-solid fa-bolt"></i> Real-Time Pulse Active</div>
+            <div style="font-size: 0.82rem; color: var(--text-sub);">Classifier: Bitwise CIDR Subnet & Corporate SSID Matching</div>
+            <div style="font-size: 0.78rem; color: #FBBF24; margin-top: 0.5rem;"><i class="fa-solid fa-bolt"></i> Real-Time Pulse Active</div>
         </div>
     </div>
 </div>
 
 <!-- Department & Manager Filters -->
-<div class="card" style="padding: 1.4rem; border: 1px solid rgba(0, 229, 255, 0.2); background: linear-gradient(135deg, rgba(10, 25, 47, 0.9) 0%, rgba(6, 16, 36, 0.9) 100%);">
+<div class="card" style="padding: 1.5rem; border: 1px solid rgba(139, 92, 246, 0.3); background: linear-gradient(135deg, rgba(15, 23, 42, 0.95) 0%, rgba(9, 13, 22, 0.98) 100%); margin-top: 1.8rem;">
     <div style="display: flex; gap: 1.8rem; align-items: center; flex-wrap: wrap;">
         <div>
-            <label style="font-size: 0.82rem; color: var(--accent-cyan); display: block; margin-bottom: 0.45rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;">
+            <label style="font-size: 0.82rem; color: #C084FC; display: block; margin-bottom: 0.45rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;">
                 <i class="fa-solid fa-building" style="margin-right: 0.3rem;"></i> Filter Org Tree by Department:
             </label>
-            <select id="deptFilter" onchange="onFilterChange()" style="padding: 0.7rem 1rem; background: rgba(3, 8, 22, 0.85); border: 1px solid var(--card-border); border-radius: 10px; color: #fff; font-size: 0.92rem; min-width: 250px; outline: none; transition: border-color 0.25s;" onfocus="this.style.borderColor='#00E5FF'" onblur="this.style.borderColor='var(--card-border)'">
+            <select id="deptFilter" onchange="onFilterChange()" style="padding: 0.7rem 1rem; background: rgba(9, 13, 22, 0.95); border: 1px solid var(--card-border); border-radius: 10px; color: #fff; font-size: 0.92rem; min-width: 250px; outline: none; transition: border-color 0.25s;" onfocus="this.style.borderColor='#8B5CF6'" onblur="this.style.borderColor='var(--card-border)'">
                 <option value="ALL">All Departments (Full Organization)</option>
                 <option value="Software Engineering">Software Engineering</option>
                 <option value="IT Infrastructure & Security">IT Infrastructure & Security</option>
@@ -152,25 +152,25 @@
         </div>
 
         <div>
-            <label style="font-size: 0.82rem; color: var(--accent-cyan); display: block; margin-bottom: 0.45rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;">
+            <label style="font-size: 0.82rem; color: #C084FC; display: block; margin-bottom: 0.45rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;">
                 <i class="fa-solid fa-magnifying-glass" style="margin-right: 0.3rem;"></i> Re-Root Tree by Manager Name:
             </label>
             <div style="display: flex; gap: 0.6rem;">
-                <input type="text" id="managerInput" placeholder="e.g. Rajesh Sharma, Sarah Connor, Kwame..." style="padding: 0.7rem 1rem; background: rgba(3, 8, 22, 0.85); border: 1px solid var(--card-border); border-radius: 10px; color: #fff; font-size: 0.92rem; width: 300px; outline: none; transition: border-color 0.25s;" onfocus="this.style.borderColor='#00E5FF'" onblur="this.style.borderColor='var(--card-border)'" />
-                <button onclick="onFilterChange()" class="btn btn-primary" style="padding: 0.7rem 1.25rem;"><i class="fa-solid fa-filter"></i> Apply Root</button>
+                <input type="text" id="managerInput" placeholder="e.g. Rajesh Sharma, Sarah Connor, Kwame..." style="padding: 0.7rem 1rem; background: rgba(9, 13, 22, 0.95); border: 1px solid var(--card-border); border-radius: 10px; color: #fff; font-size: 0.92rem; width: 300px; outline: none; transition: border-color 0.25s;" onfocus="this.style.borderColor='#8B5CF6'" onblur="this.style.borderColor='var(--card-border)'" />
+                <button onclick="onFilterChange()" class="btn btn-primary" style="padding: 0.7rem 1.25rem; background: linear-gradient(135deg, #8B5CF6 0%, #7C3AED 100%);"><i class="fa-solid fa-filter"></i> Apply Root</button>
                 <button onclick="resetFilters()" class="btn btn-secondary" style="padding: 0.7rem 1rem;"><i class="fa-solid fa-rotate-left"></i> Reset</button>
             </div>
         </div>
     </div>
 </div>
 
-<!-- CANDIDATE FEATURE 5: Interactive Business Rules Configurator UI -->
-<div class="card" style="border: 1px solid rgba(0, 229, 255, 0.3); background: linear-gradient(135deg, rgba(6, 20, 48, 0.95) 0%, rgba(10, 25, 47, 0.95) 100%); margin-top: 1.85rem;">
+<!-- Business Rules & Policy Configurator UI -->
+<div class="card" style="border: 1px solid rgba(16, 185, 129, 0.3); background: linear-gradient(135deg, rgba(15, 23, 42, 0.95) 0%, rgba(9, 13, 22, 0.98) 100%); margin-top: 1.8rem;">
     <div class="card-header">
         <div class="card-title">
-            <i class="fa-solid fa-sliders" style="color: #00E5FF;"></i> Feature 5: Interactive Business Rules & Policy Configurator
+            <i class="fa-solid fa-sliders" style="color: #10B981;"></i> Business Rules & Policy Configurator
         </div>
-        <span class="badge badge-success"><i class="fa-solid fa-gears"></i> HR & Admin Policy Control</span>
+        <span class="badge badge-success"><i class="fa-solid fa-gears"></i> Policy Governance</span>
     </div>
 
     <div class="grid" style="grid-template-columns: repeat(3, 1fr); gap: 1.4rem; margin-bottom: 0;">

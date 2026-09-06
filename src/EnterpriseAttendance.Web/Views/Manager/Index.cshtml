@@ -84,13 +84,13 @@
     </div>
 </div>
 
-<!-- FEATURE 6: Day-of-Week Attendance Distribution (Mon-Fri Heatmap Chart) -->
+<!-- Day-of-Week Attendance Distribution (Mon-Fri Heatmap Chart) -->
 <div class="card" style="margin-top: 1.85rem;">
     <div class="card-header">
         <div class="card-title">
-            <i class="fa-solid fa-calendar-week" style="color: #00E5FF;"></i> Feature 6: Team Attendance Distribution (Monday to Friday Density)
+            <i class="fa-solid fa-calendar-week" style="color: #10B981;"></i> Team Attendance Density (Monday to Friday)
         </div>
-        <span class="badge badge-success"><i class="fa-solid fa-chart-simple"></i> Working Days Focus</span>
+        <span class="badge badge-success" style="background: rgba(16,185,129,0.2); color: #34D399; border-color: #10B981;"><i class="fa-solid fa-chart-simple"></i> Working Days Focus</span>
     </div>
     <div style="padding: 0.5rem; height: 230px;">
         <canvas id="dayOfWeekChart"></canvas>
@@ -107,24 +107,24 @@
         <span class="badge badge-success"><i class="fa-solid fa-shield-halved"></i> Auto-Synced via Entra ID (India Region)</span>
     </div>
 
-    <div id="orgChartTreeContainer" style="background: rgba(15, 23, 42, 0.6); border: 1px solid var(--card-border); border-radius: 12px; padding: 1.2rem; min-height: 140px;">
+    <div id="orgChartTreeContainer" style="background: rgba(9, 13, 22, 0.95); border: 1px solid var(--card-border); border-radius: 12px; padding: 1.2rem; min-height: 140px;">
         <div style="text-align: center; color: var(--text-muted); padding: 2rem;">
             <i class="fa-solid fa-spinner fa-spin" style="font-size: 1.5rem; color: #10B981;"></i><br/>Loading reporting hierarchy...
         </div>
     </div>
 </div>
 
-<!-- FEATURE 8: Direct Reports & Subordinate Inspection Table (with Subtree Toggle Switch) -->
+<!-- Direct Reports & Subordinate Inspection Table (with Subtree Toggle Switch) -->
 <div class="card">
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.2rem; flex-wrap: wrap; gap: 1rem;">
         <div>
             <h3 style="font-size: 1.15rem; font-weight: 700; color: #fff;">Direct Reports & Subordinate Inspection</h3>
             <p id="tableSubHeader" style="color: var(--text-sub); font-size: 0.85rem;">Showing direct reports for selected manager.</p>
         </div>
-        <!-- Feature 8: Toggle Switch -->
-        <div style="display: flex; gap: 0.5rem; align-items: center; background: rgba(3, 8, 22, 0.8); padding: 0.4rem 0.8rem; border-radius: 10px; border: 1px solid var(--card-border);">
-            <span style="font-size: 0.8rem; color: var(--text-sub); font-weight: 600;">Feature 8 Scope:</span>
-            <button id="btnDirectOnly" onclick="setSubtreeToggle(false)" class="btn btn-primary" style="padding: 0.35rem 0.75rem; font-size: 0.78rem;">Direct Reports Only</button>
+        <!-- Subtree Toggle Switch -->
+        <div style="display: flex; gap: 0.5rem; align-items: center; background: rgba(9, 13, 22, 0.9); padding: 0.45rem 0.9rem; border-radius: 10px; border: 1px solid var(--card-border);">
+            <span style="font-size: 0.8rem; color: var(--text-sub); font-weight: 600;">Subtree Scope Filter:</span>
+            <button id="btnDirectOnly" onclick="setSubtreeToggle(false)" class="btn btn-primary" style="padding: 0.35rem 0.75rem; font-size: 0.78rem; background: linear-gradient(135deg, #10B981 0%, #059669 100%);">Direct Reports Only</button>
             <button id="btnFullSubtree" onclick="setSubtreeToggle(true)" class="btn btn-secondary" style="padding: 0.35rem 0.75rem; font-size: 0.78rem;">Entire Subtree</button>
         </div>
     </div>

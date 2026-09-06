@@ -98,6 +98,7 @@ namespace EnterpriseAttendance.Services.Engine
         public async Task PerformEndOfDayMergeAsync(DateTime date)
         {
             var targetDate = date.Date;
+            // Edge Case 20: Filter inactive/disabled employees (resigned/disabled in Entra ID)
             var employees = await _context.Employees.Where(e => e.IsActive).ToListAsync();
 
             foreach (var emp in employees)
@@ -127,15 +128,17 @@ namespace EnterpriseAttendance.Services.Engine
                     continue;
                 }
 
-                // Split sessions by Corporate Office vs Remote
+                // Edge Case 1 & 2: Split sessions by Corporate Office vs Remote/WFH
                 var officeSessions = sessions.Where(s => s.NetworkLocationType == NetworkLocationType.CorporateOffice).ToList();
                 var remoteSessions = sessions.Where(s => s.NetworkLocationType != NetworkLocationType.CorporateOffice).ToList();
 
                 DateTime? firstSeen = sessions.Min(s => s.StartTime);
                 DateTime? lastSeen = sessions.Max(s => s.LastSeenTime);
 
-                // Multi-Device & Session Hours Calculation
+                // Multi-Device & Session Hours Calculation (Edge Case 1: Deduplicated timeline)
                 double totalOfficeHours = 0.0;
+                double totalRemoteHours = 0.0;
+
                 if (officeSessions.Any())
                 {
                     firstSeen = officeSessions.Min(s => s.StartTime);
@@ -143,8 +146,43 @@ namespace EnterpriseAttendance.Services.Engine
                     totalOfficeHours = CalculateNetWorkingHours(officeSessions);
                 }
 
+                if (remoteSessions.Any())
+                {
+                    totalRemoteHours = CalculateNetWorkingHours(remoteSessions);
+                }
+
                 bool isOfficeDay = officeSessions.Any();
+                bool isRemoteDay = remoteSessions.Any();
                 int? primaryOfficeLocId = officeSessions.FirstOrDefault()?.OfficeLocationId ?? emp.OfficeLocationId;
+
+                // Determine AttendanceType based on Edge Cases 2, 15, 16, 17
+                AttendanceType computedAttendanceType;
+
+                // Edge Case 16: Weekend Work (Saturday / Sunday)
+                if (targetDate.DayOfWeek == DayOfWeek.Saturday || targetDate.DayOfWeek == DayOfWeek.Sunday)
+                {
+                    computedAttendanceType = AttendanceType.WeekendWork;
+                }
+                // Edge Case 2: Half Office, Half WFH (e.g. >= 1 hr Office AND >= 1 hr WFH)
+                else if (totalOfficeHours >= 1.0 && totalRemoteHours >= 1.0)
+                {
+                    computedAttendanceType = AttendanceType.Hybrid;
+                }
+                // Edge Case 17: Short Office Visit (< 30 minutes / 0.5 hrs minimum threshold)
+                else if (isOfficeDay && totalOfficeHours < 0.5)
+                {
+                    computedAttendanceType = AttendanceType.ShortVisit;
+                }
+                else if (isOfficeDay)
+                {
+                    computedAttendanceType = AttendanceType.Office;
+                }
+                else
+                {
+                    computedAttendanceType = AttendanceType.WFH;
+                }
+
+                bool isHybridCompliant = (computedAttendanceType == AttendanceType.Office || computedAttendanceType == AttendanceType.Hybrid) && totalOfficeHours >= 4.0;
 
                 var existingDaily = await _context.DailyAttendances
                     .FirstOrDefaultAsync(d => d.EmployeeId == emp.Id && d.AttendanceDate == targetDate);
@@ -152,13 +190,13 @@ namespace EnterpriseAttendance.Services.Engine
                 if (existingDaily != null)
                 {
                     existingDaily.OfficeLocationId = primaryOfficeLocId;
-                    existingDaily.AttendanceType = isOfficeDay ? AttendanceType.Office : AttendanceType.WFH;
+                    existingDaily.AttendanceType = computedAttendanceType;
                     existingDaily.FirstSeenTime = firstSeen;
                     existingDaily.LastSeenTime = lastSeen;
                     existingDaily.TotalOfficeHours = Math.Round(totalOfficeHours, 2);
                     existingDaily.TotalSessions = sessions.Count;
                     existingDaily.PrimaryNetworkType = isOfficeDay ? NetworkLocationType.CorporateOffice : NetworkLocationType.Remote;
-                    existingDaily.IsHybridCompliant = isOfficeDay;
+                    existingDaily.IsHybridCompliant = isHybridCompliant;
                     existingDaily.UpdatedAt = DateTime.UtcNow;
                     _context.DailyAttendances.Update(existingDaily);
                 }
@@ -169,13 +207,13 @@ namespace EnterpriseAttendance.Services.Engine
                         EmployeeId = emp.Id,
                         AttendanceDate = targetDate,
                         OfficeLocationId = primaryOfficeLocId,
-                        AttendanceType = isOfficeDay ? AttendanceType.Office : AttendanceType.WFH,
+                        AttendanceType = computedAttendanceType,
                         FirstSeenTime = firstSeen,
                         LastSeenTime = lastSeen,
                         TotalOfficeHours = Math.Round(totalOfficeHours, 2),
                         TotalSessions = sessions.Count,
                         PrimaryNetworkType = isOfficeDay ? NetworkLocationType.CorporateOffice : NetworkLocationType.Remote,
-                        IsHybridCompliant = isOfficeDay
+                        IsHybridCompliant = isHybridCompliant
                     };
                     await _context.DailyAttendances.AddAsync(daily);
                 }

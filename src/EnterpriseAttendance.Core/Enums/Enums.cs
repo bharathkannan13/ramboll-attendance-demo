@@ -15,7 +15,11 @@ namespace EnterpriseAttendance.Core.Enums
         Absent = 3,
         Holiday = 4,
         Weekend = 5,
-        Leave = 6
+        Leave = 6,
+        Hybrid = 7,       // Half Office, Half WFH (e.g. 4 hrs Office + 4 hrs WFH)
+        HolidayWork = 8,  // Public Holiday Work
+        WeekendWork = 9,  // Weekend Work (Sat/Sun)
+        ShortVisit = 10   // Short Office Visit (< 30 mins threshold)
     }
 
     public enum SessionStatus

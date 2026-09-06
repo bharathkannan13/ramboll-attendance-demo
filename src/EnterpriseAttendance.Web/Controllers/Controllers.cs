@@ -716,6 +716,12 @@ namespace EnterpriseAttendance.Web.Controllers
         [HttpPost("business-rules")]
         public async Task<IActionResult> UpdateBusinessRule([FromBody] BusinessRuleUpdateRequest request)
         {
+            var userRole = User.FindFirst("AppRole")?.Value;
+            if (userRole == "SecurityReader" || userRole == "PowerUser")
+            {
+                return StatusCode(403, new { success = false, message = "Access Denied: SecurityReader and PowerUser roles have Read-Only access and cannot modify business rules." });
+            }
+
             var rule = await _context.BusinessRules.FirstOrDefaultAsync(r => r.RuleKey == request.RuleKey);
             if (rule == null)
             {
@@ -1042,6 +1048,12 @@ namespace EnterpriseAttendance.Web.Controllers
         [HttpPost("assign")]
         public async Task<IActionResult> AssignRole([FromBody] RoleAssignRequest request)
         {
+            var userRole = User.FindFirst("AppRole")?.Value;
+            if (userRole == "SecurityReader" || userRole == "PowerUser")
+            {
+                return StatusCode(403, new { success = false, message = "Access Denied: Read-Only role (SecurityReader/PowerUser) cannot perform administrative role assignments." });
+            }
+
             if (string.IsNullOrWhiteSpace(request.UserEmail))
             {
                 return BadRequest(new { message = "Corporate user email is required." });
@@ -1096,6 +1108,12 @@ namespace EnterpriseAttendance.Web.Controllers
         [HttpPost("revoke")]
         public async Task<IActionResult> RevokeRole([FromBody] RoleRevokeRequest request)
         {
+            var userRole = User.FindFirst("AppRole")?.Value;
+            if (userRole == "SecurityReader" || userRole == "PowerUser")
+            {
+                return StatusCode(403, new { success = false, message = "Access Denied: Read-Only role (SecurityReader/PowerUser) cannot revoke access." });
+            }
+
             var assignment = await _context.UserRoleAssignments.FindAsync(request.AssignmentId);
             if (assignment == null)
             {
@@ -1124,6 +1142,12 @@ namespace EnterpriseAttendance.Web.Controllers
         [HttpPost("extend")]
         public async Task<IActionResult> ExtendRole([FromBody] RoleExtendRequest request)
         {
+            var userRole = User.FindFirst("AppRole")?.Value;
+            if (userRole == "SecurityReader" || userRole == "PowerUser")
+            {
+                return StatusCode(403, new { success = false, message = "Access Denied: Read-Only role (SecurityReader/PowerUser) cannot extend access." });
+            }
+
             var assignment = await _context.UserRoleAssignments.FindAsync(request.AssignmentId);
             if (assignment == null)
             {

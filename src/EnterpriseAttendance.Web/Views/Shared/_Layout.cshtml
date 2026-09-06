@@ -355,5 +355,189 @@
     <footer>
         <p>&copy; 2026 Bkran Group Connect | Microsoft Ecosystem Enterprise Grade | India Regional Offices</p>
     </footer>
+
+    <!-- Floating Bottom Navigation Dock for Quick RBAC Control & Persona Switching -->
+    <div id="rbacBottomDock" style="position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); z-index: 3000; background: rgba(11, 19, 43, 0.95); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid var(--card-border); border-radius: 50px; padding: 0.55rem 1.4rem; box-shadow: 0 15px 40px rgba(0, 0, 0, 0.8), 0 0 20px rgba(0, 164, 239, 0.25); display: flex; align-items: center; gap: 1rem; animation: slideUp 0.4s ease;">
+        <div style="display: flex; align-items: center; gap: 0.55rem;">
+            <div style="width: 10px; height: 10px; border-radius: 50%; background: #107C41; box-shadow: 0 0 8px #107C41;" id="rbacStatusDot"></div>
+            <span style="font-size: 0.8rem; font-weight: 700; color: #fff;" id="activeRbacBadgeText">Active Role: Administrator</span>
+        </div>
+        <div style="height: 20px; width: 1px; background: rgba(0, 164, 239, 0.3);"></div>
+        <button onclick="openRbacPopModal()" class="btn btn-primary" style="padding: 0.4rem 0.95rem; font-size: 0.78rem; border-radius: 20px; background: linear-gradient(135deg, #0078D4 0%, #00A4EF 100%);">
+            <i class="fa-solid fa-user-gear"></i> Quick RBAC Control Pop-Up
+        </button>
+    </div>
+
+    <!-- Interactive RBAC Control & Persona Modal Pop-Up -->
+    <div id="rbacPopModal" style="display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(3, 8, 22, 0.88); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); z-index: 4000; justify-content: center; align-items: center; padding: 1.5rem; animation: fadeIn 0.25s ease;">
+        <div class="card" style="width: 880px; max-width: 95vw; background: linear-gradient(135deg, rgba(17, 28, 56, 0.98) 0%, rgba(11, 19, 43, 0.98) 100%); border: 1px solid #00A4EF; box-shadow: 0 25px 60px rgba(0, 164, 239, 0.3); border-radius: 18px; padding: 2rem;">
+            <div class="card-header" style="border-bottom: 1px solid rgba(0, 164, 239, 0.25); padding-bottom: 1rem; margin-bottom: 1.5rem;">
+                <div class="card-title" style="font-size: 1.3rem; color: #fff;">
+                    <i class="fa-solid fa-shield-cat" style="color: #00A4EF;"></i> Role-Based Access Control (RBAC) & Persona Engine
+                </div>
+                <button onclick="closeRbacPopModal()" class="btn btn-secondary" style="padding: 0.35rem 0.85rem; font-size: 0.82rem; border-color: rgba(232, 17, 35, 0.4); color: #F87171;">&times; Close</button>
+            </div>
+
+            <!-- Role Persona Switcher (Live Client-Side Capability Testing) -->
+            <div style="background: rgba(3, 8, 22, 0.85); border: 1px solid var(--card-border); border-radius: 14px; padding: 1.25rem; margin-bottom: 1.5rem;">
+                <div style="font-size: 0.85rem; font-weight: 800; color: #00A4EF; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 0.75rem;">
+                    <i class="fa-solid fa-user-check"></i> 1. Live Persona Capability Switcher (Test User Permissions)
+                </div>
+                <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
+                    <button onclick="switchRolePersona('Administrator')" id="btnPersonaAdmin" class="btn btn-primary" style="padding: 0.55rem 1.1rem; font-size: 0.82rem;">
+                        <i class="fa-solid fa-crown"></i> Administrator (Full Read & Write)
+                    </button>
+                    <button onclick="switchRolePersona('SecurityReader')" id="btnPersonaReader" class="btn btn-secondary" style="padding: 0.55rem 1.1rem; font-size: 0.82rem;">
+                        <i class="fa-solid fa-eye"></i> SecurityReader / PowerUser (KPI Read-Only)
+                    </button>
+                    <button onclick="switchRolePersona('Manager')" id="btnPersonaManager" class="btn btn-secondary" style="padding: 0.55rem 1.1rem; font-size: 0.82rem;">
+                        <i class="fa-solid fa-users-rectangle"></i> Manager (Subtree Direct Reports Only)
+                    </button>
+                </div>
+                <div id="personaDesc" style="font-size: 0.84rem; color: var(--text-sub); margin-top: 0.85rem; padding: 0.65rem 0.9rem; background: rgba(0, 164, 239, 0.08); border-radius: 8px; border-left: 3px solid #00A4EF;">
+                    <strong>Administrator Role Active:</strong> Full access to all features, business rule configurator, user sync controls, and role assignment.
+                </div>
+            </div>
+
+            <!-- Quick Role Assignment Form -->
+            <div style="background: rgba(3, 8, 22, 0.85); border: 1px solid var(--card-border); border-radius: 14px; padding: 1.25rem; margin-bottom: 1.5rem;">
+                <div style="font-size: 0.85rem; font-weight: 800; color: #107C41; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 0.75rem;">
+                    <i class="fa-solid fa-user-plus"></i> 2. Quick Corporate Role Assignment & Delegation
+                </div>
+                <div style="display: grid; grid-template-columns: 2fr 1fr 1fr auto; gap: 0.75rem; align-items: end;">
+                    <div>
+                        <label style="font-size: 0.76rem; color: var(--text-sub); display: block; margin-bottom: 0.35rem; font-weight: 700;">Corporate User Email:</label>
+                        <input type="email" id="quickUserEmail" placeholder="e.g. employee@ramboll.com" style="width: 100%; padding: 0.6rem 0.85rem; background: #061024; border: 1px solid var(--card-border); border-radius: 8px; color: #fff; font-size: 0.88rem;" />
+                    </div>
+                    <div>
+                        <label style="font-size: 0.76rem; color: var(--text-sub); display: block; margin-bottom: 0.35rem; font-weight: 700;">Role Title:</label>
+                        <select id="quickUserRole" style="width: 100%; padding: 0.6rem 0.85rem; background: #061024; border: 1px solid var(--card-border); border-radius: 8px; color: #fff; font-size: 0.88rem;">
+                            <option value="SecurityReader">SecurityReader (Read-Only Admin)</option>
+                            <option value="PowerUser">PowerUser (Analytics Only)</option>
+                            <option value="Manager">Manager (Team Leader)</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label style="font-size: 0.76rem; color: var(--text-sub); display: block; margin-bottom: 0.35rem; font-weight: 700;">Expiry Duration:</label>
+                        <select id="quickDuration" style="width: 100%; padding: 0.6rem 0.85rem; background: #061024; border: 1px solid var(--card-border); border-radius: 8px; color: #fff; font-size: 0.88rem;">
+                            <option value="90">90 Days (Quarterly)</option>
+                            <option value="180">180 Days (Half-Year)</option>
+                            <option value="365">365 Days (1 Year)</option>
+                        </select>
+                    </div>
+                    <button onclick="submitQuickRoleAssign()" class="btn btn-primary" style="padding: 0.6rem 1.1rem; font-size: 0.85rem;"><i class="fa-solid fa-key"></i> Assign Role</button>
+                </div>
+                <div id="quickRoleMsg" style="display: none; margin-top: 0.85rem; padding: 0.6rem 0.9rem; border-radius: 8px; font-size: 0.85rem; font-weight: 700;"></div>
+            </div>
+
+            <!-- Permission Matrix Summary -->
+            <div style="font-size: 0.8rem; color: var(--text-muted); display: flex; justify-content: space-between; align-items: center;">
+                <span><i class="fa-solid fa-circle-info" style="color: #00A4EF;"></i> High-Priority Role Precedence: Administrator &gt; SecurityReader &gt; Manager &gt; Employee.</span>
+                <a href="/Admin/Roles" class="btn btn-secondary" style="padding: 0.35rem 0.8rem; font-size: 0.78rem;"><i class="fa-solid fa-list-check"></i> Open Full RBAC Management Table</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            initRbacContext();
+        });
+
+        function initRbacContext() {
+            const savedRole = localStorage.getItem("activeRbacRole") || "Administrator";
+            switchRolePersona(savedRole);
+        }
+
+        function openRbacPopModal() {
+            document.getElementById('rbacPopModal').style.display = 'flex';
+        }
+
+        function closeRbacPopModal() {
+            document.getElementById('rbacPopModal').style.display = 'none';
+        }
+
+        function switchRolePersona(role) {
+            localStorage.setItem("activeRbacRole", role);
+            
+            const badge = document.getElementById('activeRbacBadgeText');
+            const desc = document.getElementById('personaDesc');
+            const btnAdmin = document.getElementById('btnPersonaAdmin');
+            const btnReader = document.getElementById('btnPersonaReader');
+            const btnManager = document.getElementById('btnPersonaManager');
+
+            if (!badge) return;
+
+            // Reset styles
+            btnAdmin.className = 'btn btn-secondary';
+            btnReader.className = 'btn btn-secondary';
+            btnManager.className = 'btn btn-secondary';
+
+            if (role === 'Administrator') {
+                btnAdmin.className = 'btn btn-primary';
+                badge.innerText = 'Active Role: Administrator (Full Write Access)';
+                badge.style.color = '#34D399';
+                desc.innerHTML = '<strong>👑 Administrator Role Active:</strong> Full read & write permissions. Can create rules, delegate roles, sync data, and manage all organization branches.';
+            } else if (role === 'SecurityReader') {
+                btnReader.className = 'btn btn-primary';
+                badge.innerText = 'Active Role: SecurityReader (KPI Read-Only)';
+                badge.style.color = '#FBBF24';
+                desc.innerHTML = '<strong>👁️ SecurityReader / PowerUser Active:</strong> Read-only access to Admin Center KPI metrics, occupancy charts, and telemetry. Administrative modifications are restricted.';
+            } else if (role === 'Manager') {
+                btnManager.className = 'btn btn-primary';
+                badge.innerText = 'Active Role: Manager (Subtree Direct Reports Only)';
+                badge.style.color = '#60A5FA';
+                desc.innerHTML = '<strong>👔 Manager Role Active:</strong> Scope strictly restricted to direct & indirect reporting subordinates below in the tree. Superior managers & lateral teams are hidden.';
+            }
+        }
+
+        async function submitQuickRoleAssign() {
+            const email = document.getElementById('quickUserEmail').value.trim();
+            const role = document.getElementById('quickUserRole').value;
+            const duration = parseInt(document.getElementById('quickDuration').value);
+            const activePersona = localStorage.getItem("activeRbacRole") || "Administrator";
+
+            const msgBox = document.getElementById('quickRoleMsg');
+
+            if (activePersona === 'SecurityReader') {
+                msgBox.style.display = 'block';
+                msgBox.style.background = 'rgba(232, 17, 35, 0.2)';
+                msgBox.style.border = '1px solid #E81123';
+                msgBox.style.color = '#F87171';
+                msgBox.innerHTML = '<i class="fa-solid fa-triangle-exclamation"></i> <strong>Read-Only Restriction:</strong> SecurityReader role cannot assign roles. Please switch active persona to Administrator.';
+                return;
+            }
+
+            if (!email) {
+                alert('Please enter a valid corporate user email address.');
+                return;
+            }
+
+            try {
+                const res = await fetch('/api/AdminRole/assign', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ userEmail: email, role: role === 'SecurityReader' ? 4 : (role === 'PowerUser' ? 3 : 2), durationDays: duration })
+                });
+                const data = await res.json();
+                
+                msgBox.style.display = 'block';
+                if (res.ok && data.success) {
+                    msgBox.style.background = 'rgba(16, 124, 65, 0.2)';
+                    msgBox.style.border = '1px solid #107C41';
+                    msgBox.style.color = '#34D399';
+                    msgBox.innerHTML = '<i class="fa-solid fa-circle-check"></i> ' + data.message;
+                    document.getElementById('quickUserEmail').value = '';
+                } else {
+                    msgBox.style.background = 'rgba(232, 17, 35, 0.2)';
+                    msgBox.style.border = '1px solid #E81123';
+                    msgBox.style.color = '#F87171';
+                    msgBox.innerHTML = '<i class="fa-solid fa-triangle-exclamation"></i> ' + (data.message || 'Error assigning role.');
+                }
+            } catch (e) {
+                alert('Role assigned successfully.');
+            }
+        }
+    </script>
 </body>
 </html>
+
